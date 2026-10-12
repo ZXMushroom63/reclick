@@ -15,17 +15,18 @@ BASE = "https://zxmushroom63.github.io/reclick" #selfhosting is easy btw. or jus
 
 if os.path.exists("updated"):
     os.removedirs("updated")
-online = False
+
+ENABLE_AUTOUPDATE = False
 
 def background_update():
     is_up = False
     try:
         is_up = requests.get(f"{BASE}/up.txt", timeout=3)
         if (is_up.text.strip() == "Connected"):
-            online = True
+            is_up = True
             print("Online, going to download update in background")
     except:
-        print("not bothering to update")
+        print("not boaate")
     if not is_up:
         return
     
@@ -35,17 +36,18 @@ def background_update():
     for item in UPDATEABLE:
         try: 
             resp = requests.get(f"{BASE}/{item}")
-            if resp.text.includes("---THISISAVALIDFILEALLISGOOD---"):
+            if "---THISISAVALIDFILEALLISGOOD---" in resp.text:
                 with open("updated/" + item, "w") as f:
                     f.write(resp.text) #i love wasting your bandwidth ;]
-        except:
+        except Exception as e:
             os.removedirs("updated")
-            break #cancel the update bro, shits over
+            print(f"update failed: {e}")
+            return #cancel the update bro, shits over
     with open("updated/complete", "w") as f:
         f.write("complete")
     print("Backgroun update done.")
 
-if online:
+if ENABLE_AUTOUPDATE:
     update = threading.Thread(target=background_update)
     update.start()
 
