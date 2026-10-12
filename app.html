@@ -7,19 +7,37 @@
     <title>reclick</title>
     <style>
         * {
-            background-color: black;
+            background-color: rgb(6, 4, 6);
             color: white;
-            font-family: monospace;
+            font-family: sans-serif;
             margin: 0;
             padding: 0;
         }
+
+        button {
+            padding: 4px;
+            border: 1px solid white;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 1.0);
+            transition: background 0.1s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        button:active {
+            background: rgba(0, 0, 0, 0);
+        }
+
+
 
         .glowy {
             text-shadow: 0px 0px 30px;
         }
 
         .crt {
-            filter: saturate(25) brightness(0.5) contrast(1.8) brightness(3.2);
+            filter: saturate(25) brightness(0.5) contrast(1.8) brightness(4.5);
         }
 
         .crt::after {
@@ -51,23 +69,14 @@
                     rgba(0, 255, 255, 0.07),
                     rgba(0, 0, 255, 0.02)); */
             background: linear-gradient(rgba(18, 18, 16, 0) 50%,
-                    rgba(0, 4, 4, 0.25) 50%),
+                    rgba(0, 4, 4, 0.2) 50%),
                 linear-gradient(90deg,
-                    rgba(255, 255, 0, 0.03),
-                    rgba(255, 0, 255, 0.03),
-                    rgba(0, 255, 255, 0.03));
+                    rgba(255, 255, 0, 0.02),
+                    rgba(255, 0, 255, 0.02),
+                    rgba(0, 255, 255, 0.02));
             z-index: 2;
             background-size: 100% 5px, 5px 100%;
             pointer-events: none;
-        }
-        
-        div {
-            transform: translate(-50%, -50%) scale(1.0);
-            transition: transform 0.5s;
-        }
-
-        div:hover {
-            transform: translate(-50%, -50%) scale(1.02);
         }
 
         html {
@@ -78,17 +87,56 @@
         }
 
         body {
-            width: calc(100vw - 4rem);
-            height: calc(100vh - 4rem);
-            padding: 2rem;
+            width: 100vw;
+            height: 100vh;
+            padding: 0rem;
+        }
+
+        #top_bar {
+            height: 2rem;
+        }
+        #top_bar {
+            width: 100vw;
+            border-bottom: 1px solid white;
+        }
+
+        #title {
+            height: 2rem;
+            line-height: 2rem;
+            font-size: 1.5rem;
+            margin-left: 0.3rem;
+            display: inline-block;
+            text-align: left;
+            justify-content: center;
+            justify-self: center;
+            margin-right:  auto;
+        }
+
+        #repatch_status {
+            margin-left: 8px;
+        }
+
+        #repatch_section {
+            width: calc(100vw - 2rem);
+            border-bottom: 1px solid white;
+            padding: 1rem;
         }
     </style>
 </head>
 
 <body class="crt">
-    <h1>plswork</h1>
+    <div id="top_bar">
+        <h1 id="title" class="glowy">reclick</h1>
+    </div>
+    <div id="repatch_section">
+        <button>Repatch Library</button>
+        <span id="repatch_status">Last repatch was 6 seconds ago.</span>
+    </div>
     <button onclick="pywebview.api.hello_world('test')">this is a button</button>
     <!-- ---THISISAVALIDFILEALLISGOOD--- -->
+    <script>
+        //setTimeout(()=>{location.reload()}, 5000);
+    </script>
 </body>
 
 </html>
