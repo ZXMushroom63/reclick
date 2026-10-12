@@ -7,5 +7,6 @@ if exist "%SUBDIR%" (
     robocopy "%SUBDIR%" "." /E /MT:8 /R:1 /W:1
     echo "Installed update!"
     TIMEOUT 1
+    RMDIR /S /Q "%SUBDIR%"
 )
-start /B path\To\Python.exe app.py
+start /B python reclick.py

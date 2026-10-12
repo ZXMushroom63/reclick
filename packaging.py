@@ -1,3 +1,4 @@
+# ---THISISAVALIDFILEALLISGOOD---
 import json
 import pathlib
 import time
@@ -16,10 +17,8 @@ def flatten1(nested_list):
 def flatten(nested):
     return list(flatten1(nested))
 
-steamApi = pathlib.Path(".").rglob("steam_api.dll")
-steamApi64 = pathlib.Path(".").rglob("steam_api64.dll")
-currentDir = pathlib.Path(".")
-files = flatten(map(lambda x: currentDir.rglob(x), ["steam_api.dll", "steam_api64.dll"]))
+readDir = pathlib.Path(".")
+files = flatten(map(lambda x: readDir.rglob(x), ["steam_api.dll", "steam_api64.dll"]))
 
 matches = set()
 

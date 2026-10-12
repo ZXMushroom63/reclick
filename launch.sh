@@ -4,4 +4,4 @@ if [ -d updated ]; then
     sleep 0.5
     rm -r updated
 fi
-python app.py
+python reclick.py

@@ -1,1 +1,3 @@
 EVERYTHING/
+*.pyc
+__pycache__/

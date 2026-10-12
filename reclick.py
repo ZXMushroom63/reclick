@@ -1,18 +1,20 @@
 # ---THISISAVALIDFILEALLISGOOD---
 import shutil
+import sys
 import os
 import requests
 import webview
-import sqlite3
 import pathlib
 import glob
 import threading
+
+sys.path.append(os.path.dirname(os.path.abspath("."))) #fix imports
+import packaging
 
 BASE = "https://zxmushroom63.github.io/reclick" #selfhosting is easy btw. or just blank this to force offline
 
 if os.path.exists("updated"):
     os.removedirs("updated")
-
 online = False
 
 def background_update():
@@ -29,7 +31,7 @@ def background_update():
     
     os.makedirs("updated")
 
-    UPDATEABLE = [ "app.py", "app.html" ]
+    UPDATEABLE = [ "reclick.py", "app.html", "packaging.py" ]
     for item in UPDATEABLE:
         try: 
             resp = requests.get(f"{BASE}/{item}")
@@ -58,6 +60,5 @@ class DatabaseCalls:
         pass
 
 
-
-webview.create_window('reclick', 'app.html', js_api=Interop())
-webview.start(debug=True)
+window = webview.create_window('reclick', 'app.html', js_api=Interop(), frameless=False)
+webview.start(debug=False)
