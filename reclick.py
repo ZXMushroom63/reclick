@@ -7,9 +7,11 @@ import webview
 import pathlib
 import glob
 import threading
+from pathlib import Path
 
-sys.path.append(os.path.dirname(os.path.abspath("."))) #fix imports
-import packaging
+sys.path.append(Path(__file__).resolve().parent) #fix imports
+import zx_packaging
+import zx_launching
 
 BASE = "https://zxmushroom63.github.io/reclick" #selfhosting is easy btw. or just blank this to force offline
 
@@ -32,7 +34,7 @@ def background_update():
     
     os.makedirs("updated")
 
-    UPDATEABLE = [ "reclick.py", "app.html", "packaging.py" ]
+    UPDATEABLE = [ "reclick.py", "app.html", "zx_packaging.py" "zx_launching.py" ]
     for item in UPDATEABLE:
         try: 
             resp = requests.get(f"{BASE}/{item}")
@@ -52,15 +54,12 @@ if ENABLE_AUTOUPDATE:
     update.start()
 
 class Interop:
-    def get_library(self, a):
-        print(a)
-        return "ok"
-
-
-class DatabaseCalls:
-    def nil(self):
-        pass
-
+    def get_library(self):
+        return zx_packaging.get_games()
+    def internal_update_library(self):
+        zx_packaging.update_games_internal()
+    def launch_async(self, config_obj):
+        zx_launching.launch_game(config_obj, True)
 
 window = webview.create_window('reclick', 'app.html', js_api=Interop(), frameless=False)
-webview.start(debug=False)
+webview.start(debug=False if len(sys.argv) > 0 else True)

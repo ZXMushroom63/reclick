@@ -18,17 +18,17 @@
             padding: 4px;
             border: 1px solid white;
             border-radius: 4px;
-            background-color: rgba(0, 0, 0, 1.0);
+            background-color: rgba(0, 0, 0, 0);
             transition: background-color 0.1s;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgb(65, 65, 65);
         }
 
         button:active {
-            background-color: rgba(0, 0, 0, 0);
+            background-color: rgb(52, 52, 52);
         }
 
 
@@ -38,7 +38,7 @@
         }
 
         .crt {
-            filter: saturate(25) brightness(0.5) contrast(1.8) brightness(4.5);
+            filter: saturate(25) brightness(0.5) contrast(1.8) brightness(7);
         }
 
         .crt::after {
@@ -141,11 +141,20 @@
             border-collapse: collapse;
         }
 
-        #left {
+        #leftOuter {
             border-right: 1px solid white;
-            overflow-y: scroll;
             width: 50%;
             align-content: start;
+            padding: 0;
+            margin: 0;
+        }
+
+        #left {
+            height: calc(100vh - 5.5rem - 2px - 2rem);
+            width: calc(100% - 2rem);
+            overflow-x: hidden;
+            overflow-y: scroll;
+            margin: 0;
             padding: 1rem;
         }
 
@@ -159,21 +168,46 @@
             border-radius: 6px;
             padding: 8px;
             cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        .game:last-child {
+            margin-bottom: 0rem;
         }
 
         .game h3, .game small {
+            display: block;
             white-space: nowrap;
+            overflow: hidden;
+            max-width: 40vw;
+            text-overflow: ellipsis;
+        }
+        .game small {
+            max-width: 40vw;
+        }
+
+        @media only screen and (max-width: 600px) {
+            #right {
+                display: none;
+            }
         }
 
         .launch_btn {
+            display: inline-block;
+            font-size: 1.25rem;
+            height: calc(100% - 1rem);
             margin-left: 0.5rem;
+            width: 4rem;
+        }
+
+        button.disabled {
+            opacity: 55%;
         }
     </style>
 </head>
 
 <body class="crt">
     <div id="top_bar">
-        <h1 id="title" class="glowy">reclick</h1>
+        <h1 id="title" class="glowy">retcon4</h1>
     </div>
     <div id="repatch_section">
         <button>Repatch Library</button>
@@ -183,19 +217,21 @@
     <div id="bottom_container">
         <table id="sectioner">
             <tr>
-                <td id="left">
-                    <div class="game">
-                        <table>
-                            <tr>
-                                <td style="width: 100%">
-                                    <h3>Rounds.exe</h3>
-                                    <small>AppID: 480 | Unity, BepInEx, PhotonPUN</small>
-                                </td>
-                                <td>
-                                    <button class="launch_btn">Launch</button>
-                                </td>
-                            </tr>
-                        </table>
+                <td id="leftOuter">
+                    <div id="left">
+                        <div class="game">
+                            <table>
+                                <tr>
+                                    <td style="width: 100%">
+                                        <h3>Rounds.exe</h3>
+                                        <small>AppID: 480 | Unity, BepInEx, PhotonPUN</small>
+                                    </td>
+                                    <td>
+                                        <button class="launch_btn">play</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </td>
                 <td id="right">
@@ -208,7 +244,73 @@
 
     <!-- ---THISISAVALIDFILEALLISGOOD--- -->
     <script>
-        //setTimeout(()=>{location.reload()}, 5000);
+        let games = {};
+        const waitForPywebview = async () => {
+        return new Promise((resolve) => {
+            const interval = setInterval(() => {
+            if (typeof pywebview !== 'undefined' && pywebview.api && Object.keys(pywebview.api).length > 0) {
+                clearInterval(interval);
+                resolve();
+            }
+            }, 50);
+        });
+        };
+        addEventListener("load", init);
+        async function init() {
+            await waitForPywebview();
+            games = await window.pywebview.api.get_library();
+            redraw_games();
+            await window.pywebview.api.internal_update_library();
+        }
+        function draw_game(gameEntry, left) {
+            try {
+                const cfgPath = gameEntry[0];
+                const json = JSON.parse(gameEntry[1]);
+                const gameContainer = document.createElement("div");
+                gameContainer.classList.add("game");
+                const gameContentWrapper = document.createElement("table");
+                gameContainer.appendChild(gameContentWrapper);
+                const gameContent = document.createElement("tr");
+                gameContentWrapper.appendChild(gameContent);
+                const gameDetails = document.createElement("td");
+                const launchWrapper = document.createElement("td");
+                gameContent.appendChild(gameDetails);
+                gameDetails.style.width = "100%";
+                gameContent.appendChild(launchWrapper);
+
+                const gameTitle = document.createElement("h3");
+                const parts = json.GamePath.split("/");
+                gameTitle.innerText = parts[parts.length - 1];
+                gameDetails.appendChild(gameTitle);
+                const gameInfo = document.createElement("small");
+                gameInfo.innerText = `AppID: ${json.AppID} | ${json.Tags.join(", ")}`;
+                gameDetails.appendChild(gameInfo);
+
+                const launchBtn = document.createElement("button");
+                launchBtn.classList.add("launch_btn");
+                launchBtn.innerText = "Play";
+                launchWrapper.appendChild(launchBtn);
+                launchBtn.addEventListener("click", async ()=>{
+                    if (launchBtn.classList.contains("disabled")) {
+                        return;
+                    }
+                    launchBtn.classList.add("disabled");
+                    await window.pywebview.api.launch_async(json);
+                    launchBtn.classList.remove("disabled");
+                });
+
+                left.appendChild(gameContainer);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        function redraw_games() {
+            const left = document.querySelector("#left");
+            const oldScroll = left.scrollTop;
+            [...document.querySelectorAll(".game")].forEach(x => x.remove());
+
+            Object.entries(games).forEach(ent => draw_game(ent, left));
+        }
     </script>
 </body>
 
