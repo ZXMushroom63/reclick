@@ -3,6 +3,7 @@ import shutil
 import sys
 import os
 import pathlib
+import time
 import glob
 import socket
 import threading
@@ -96,6 +97,14 @@ class Interop:
             None, "runas", "cmd", f".\\retconlib\\vlanpatch.bat {broadcastAddr}", root, 1
         )
         
+def on_closed():
+    k = zx_launching.config_pid_map.keys()
+    for key in k:
+        zx_launching.config_pid_map[key] = False
+    time.sleep(1.0)
+    print("Goodbye")    
 
 window = webview.create_window('reclick', 'app.html', js_api=Interop(), frameless=False)
+window.events.closed += on_closed
+
 webview.start(debug=True if len(sys.argv) > 0 else True)

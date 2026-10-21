@@ -101,66 +101,6 @@ def patch_path(search_dir):
         new_content = pattern.sub(f"IPAddress=\"{global_conf["HostAddress"]}\"", content)
         with open(cfg, "w", encoding="utf-8") as f:
             f.write(new_content)
-        
-def dedupe(game_path):
-    current_pid = os.getpid()
-    game_path_obj = pathlib.Path(game_path)
-    game_filename = game_path_obj.name.lower()
-    
-    matching_procs = []
-    
-    for proc in psutil.process_iter(['pid', 'name', 'exe', 'cmdline']):
-        try:
-            if proc.info['pid'] == current_pid:
-                continue
-                
-            exe = proc.info.get('exe')
-            name = proc.info.get('name')
-            cmdline = proc.info.get('cmdline')
-            
-            is_match = False
-            
-            if exe and pathlib.Path(exe).name.lower() == game_filename:
-                is_match = True
-            elif name and name.lower() == game_filename:
-                is_match = True
-                
-            elif cmdline:
-                cmdline_str = " ".join(cmdline).lower()
-                if game_filename in cmdline_str and not "python" in cmdline_str:
-                    is_match = True
-                    
-            if is_match:
-                matching_procs.append(proc)
-                
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-            
-    if matching_procs:
-        print(f"Found {len(matching_procs)} duplicate process(es). Terminating gracefully...")
-        for p in matching_procs:
-            try:
-                p.terminate()
-            except psutil.NoSuchProcess:
-                pass
-        
-        # Give them 1 full second to close files and clean up
-        gone, alive = psutil.wait_procs(matching_procs, timeout=1.0)
-        
-        # Force kill any stubborn survivors
-        for p in alive:
-            try:
-                print(f"Process PID {p.pid} did not exit gracefully, force killing...")
-                p.kill()
-            except psutil.NoSuchProcess:
-                pass
-                
-        # Brief pause to let Wine/OS release file locks
-        if alive or gone:
-            print("Waiting for OS/Wine to release file locks...")
-            time.sleep(1.0)
-    else:
-        print("No duplicate processes found.")
 
 config_pid_map = {}
 def launch_game(config, modded, flags):
@@ -168,7 +108,8 @@ def launch_game(config, modded, flags):
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
     command = [str(pathlib.Path(config["GamePath"]).absolute())]
-    dedupe(config["GamePath"])
+    #dedupe(config["GamePath"])
+    fileName = pathlib.Path(config["GamePath"]).name
     if penguin:
         command.insert(0, "wine")
     env["WINEDEBUG"] = "-all"
@@ -183,8 +124,11 @@ def launch_game(config, modded, flags):
     command = command + flags
     old_portstart = subprocess.run(["sysctl", "-n", "net.ipv4.ip_unprivileged_port_start"], capture_output=True, text=True).stdout.strip()
     
-    if "PhotonServer4" in config["Tags"] or "PhotonServer5" in config["Tags"] and penguin:
-        subprocess.run(["pkexec", "sysctl", "-w", "net.ipv4.ip_unprivileged_port_start=80"], env=env)
+    if "PhotonServer4" in config["Tags"] or "PhotonServer5" in config["Tags"]:
+        if penguin:
+            subprocess.run(["pkexec", "sysctl", "-w", "net.ipv4.ip_unprivileged_port_start=80"], env=env)
+        else:
+            subprocess.run(["taskkill", "/F", "/IM", fileName], check=True, capture_output=True, text=True)
         
     print(command)
     try:
@@ -209,6 +153,7 @@ def launch_game(config, modded, flags):
 
                     try:
                         print(f"Killing process...")
+                        sys.stdout.flush()
                         process.wait(timeout=0.5)
                     except subprocess.TimeoutExpired:
                         process.kill()
@@ -219,8 +164,8 @@ def launch_game(config, modded, flags):
     except Exception as e:
         print(e)
     config_pid_map[config["GamePath"]] = False
-    if "PhotonServer4" in config["Tags"] or "PhotonServer5" in config["Tags"] and penguin:
-        subprocess.run(["pkexec", "sysctl", "-w", f"net.ipv4.ip_unprivileged_port_start={old_portstart}"], env=env)
+    # if "PhotonServer4" in config["Tags"] or "PhotonServer5" in config["Tags"] and penguin:
+    #     subprocess.run(["pkexec", "sysctl", "-w", f"net.ipv4.ip_unprivileged_port_start={old_portstart}"], env=env)
         
 def close_game(config):
     config_pid_map[config["GamePath"]] = False
