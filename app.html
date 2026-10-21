@@ -214,7 +214,7 @@
 
         :focus {
             outline: none;
-            background-color: rgb(65, 65, 65);
+            background-color: rgb(57, 57, 57);
         }
         input:focus, select:focus {
             outline: none;
@@ -498,7 +498,10 @@
                 const cfgPath = gameEntry[0];
                 const json = gameEntry[1];
                 const gameContainer = document.createElement("div");
-                gameContainer.addEventListener("click", ()=>{
+                gameContainer.addEventListener("click", (e)=>{
+                    if (e.target !== gameContainer) {
+                        return;
+                    }
                     document.body.classList.toggle("changingsettings");
                 });
                 gameContainer.classList.add("game");

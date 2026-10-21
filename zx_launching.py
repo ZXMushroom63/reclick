@@ -7,6 +7,7 @@ import subprocess
 import sys
 import shutil
 import zx_packaging
+import psutil
 import re
 
 def patch_path(search_dir):
@@ -101,7 +102,65 @@ def patch_path(search_dir):
         with open(cfg, "w", encoding="utf-8") as f:
             f.write(new_content)
         
-
+def dedupe(game_path):
+    current_pid = os.getpid()
+    game_path_obj = pathlib.Path(game_path)
+    game_filename = game_path_obj.name.lower()
+    
+    matching_procs = []
+    
+    for proc in psutil.process_iter(['pid', 'name', 'exe', 'cmdline']):
+        try:
+            if proc.info['pid'] == current_pid:
+                continue
+                
+            exe = proc.info.get('exe')
+            name = proc.info.get('name')
+            cmdline = proc.info.get('cmdline')
+            
+            is_match = False
+            
+            if exe and pathlib.Path(exe).name.lower() == game_filename:
+                is_match = True
+            elif name and name.lower() == game_filename:
+                is_match = True
+                
+            elif cmdline:
+                cmdline_str = " ".join(cmdline).lower()
+                if game_filename in cmdline_str and not "python" in cmdline_str:
+                    is_match = True
+                    
+            if is_match:
+                matching_procs.append(proc)
+                
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+            
+    if matching_procs:
+        print(f"Found {len(matching_procs)} duplicate process(es). Terminating gracefully...")
+        for p in matching_procs:
+            try:
+                p.terminate()
+            except psutil.NoSuchProcess:
+                pass
+        
+        # Give them 1 full second to close files and clean up
+        gone, alive = psutil.wait_procs(matching_procs, timeout=1.0)
+        
+        # Force kill any stubborn survivors
+        for p in alive:
+            try:
+                print(f"Process PID {p.pid} did not exit gracefully, force killing...")
+                p.kill()
+            except psutil.NoSuchProcess:
+                pass
+                
+        # Brief pause to let Wine/OS release file locks
+        if alive or gone:
+            print("Waiting for OS/Wine to release file locks...")
+            time.sleep(1.0)
+    else:
+        print("No duplicate processes found.")
 
 config_pid_map = {}
 def launch_game(config, modded, flags):
@@ -109,6 +168,7 @@ def launch_game(config, modded, flags):
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
     command = [str(pathlib.Path(config["GamePath"]).absolute())]
+    dedupe(config["GamePath"])
     if penguin:
         command.insert(0, "wine")
     env["WINEDEBUG"] = "-all"
