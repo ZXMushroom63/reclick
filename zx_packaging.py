@@ -1,4 +1,5 @@
 # ---THISISAVALIDFILEALLISGOOD---
+import random
 import json
 import pathlib
 import time
@@ -25,12 +26,15 @@ def make_tags(tags_dict):
     return out
 
 readDir = pathlib.Path(".")
+
 def update_games_internal():
     files = flatten(map(lambda x: readDir.rglob(x), ["steam_api.dll", "steam_api64.dll"]))
 
     matches = set()
 
     for file in files:
+        if "retconlib" in str(file):
+            continue
         parts = file.parts
         cwd = pathlib.Path(parts[0])
         found_match = False
@@ -52,6 +56,9 @@ def update_games_internal():
         if len(filtered) > 0:
             new_games.add(filtered[0])
             
+    photonFiles = filter(lambda unit: not "bin_Win32" in str(unit), flatten(map(lambda x: readDir.rglob(x), ["PhotonSocketServer.exe"])))
+    new_games.update(photonFiles)
+            
     for game in new_games:
         cwd = game.parent
         appid = 0
@@ -66,6 +73,7 @@ def update_games_internal():
             f.write(json.dumps({
                 "GamePath": str(game),
                 "AppID": appid,
+                "Arguments": "",
                 "Tags": make_tags({
                     "Positron": lambda _: cwd.joinpath("needs_photon_address.txt").exists(), #custom photon server patch
                     "PhotonRedirector": lambda _: len(list(cwd.joinpath("BepInEx").joinpath("plugins").rglob("PhotonRedirector.dll"))) > 0,
@@ -74,8 +82,10 @@ def update_games_internal():
                     "PUN2": lambda _: len(list(cwd.rglob("PhotonUnityNetworking.dll"))) > 0,
                     "BepInEx": lambda _: cwd.joinpath("BepInEx").exists(),
                     "SteamAPI": lambda _: appid != 0,
-                    "Unity": lambda _: cwd.joinpath("UnityCrashHandler64.exe").exists() or cwd.joinpath("UnityCrashHandler.exe").exists(),
+                    "Unity": lambda _: cwd.joinpath("UnityCrashHandler64.exe").exists() or cwd.joinpath("UnityCrashHandler.exe").exists()  or cwd.joinpath("UnityPlayer.dll").exists(),
                     "IL2CPP": lambda _: len(list(cwd.rglob("il2cpp_data"))) > 0,
+                    "PhotonServer4": lambda _: cwd.joinpath("PhotonLicensing.dll").exists(),
+                    "PhotonServer5": lambda _: (not cwd.joinpath("PhotonLicensing.dll").exists()) and cwd.joinpath("PhotonHostRuntime.dll").exists(),
                 })
             }, indent=2))
 
@@ -88,3 +98,55 @@ def get_games():
         out[str(f)] = handle.read()
         handle.close()
     return out
+
+def mk_steam_uuid():
+    STEAMID = "7656"
+    for i in range(13):
+        STEAMID += str(random.randint(0, 9))
+    return STEAMID
+
+def fixup_conf(obj):
+    if len(obj["SteamID"]) != 17 or not obj["SteamID"].startswith("7656"):
+        obj["SteamID"] = mk_steam_uuid()
+    if len(obj["Username"]) == 0:
+        obj["Username"] = mk_new_user()
+    obj["Username"] = obj["Username"].replace(" ", "_").strip()
+    return obj
+
+def mk_new_user():
+    USER = "RETCONPLAYER"
+    for i in range(4):
+        USER += str(random.randint(0, 9))
+    return USER
+
+def write_conf(obj):
+    print(obj)
+    if obj is None:
+        return
+    with open(readDir.joinpath("reclick.root.json"), "w") as f:
+        f.write(json.dumps(fixup_conf(obj), indent=2))
+
+DEFAULTS = {
+    "Username": mk_new_user(),
+    "SteamID": mk_steam_uuid(),
+    "PhotonHost": "127.0.0.1",
+    "HostAddress": "127.0.0.1",
+    "ReplaceSteamAPI": "enable"
+}
+
+def create_default_conf():
+    print("Generating new Steam ID...")
+    write_conf(DEFAULTS)
+
+def read_cfg():
+    if not readDir.joinpath("reclick.root.json").exists():
+        create_default_conf()
+    out = DEFAULTS.copy()
+    try:
+        with open(readDir.joinpath("reclick.root.json")) as f:
+            out.update(json.loads(f.read()))
+    except:
+        print("Encountered corrupt config, regenerating...")
+        create_default_conf()
+    return fixup_conf(out)
+    

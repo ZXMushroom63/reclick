@@ -2,16 +2,25 @@
 import shutil
 import sys
 import os
-import requests
-import webview
 import pathlib
 import glob
+import socket
 import threading
 from pathlib import Path
-
+import subprocess
 sys.path.append(Path(__file__).resolve().parent) #fix imports
+root = Path(__file__).resolve().parent
 import zx_packaging
 import zx_launching
+
+try:
+    import requests
+    import webview
+    import psutil
+except Exception as e:
+    print(e)
+    subprocess.run(["python", "-m", "pip", "install", "--trusted-host", "pypi.org", "--trusted-host", "files.pythonhosted.org", "pywebview", "requests", "psutil" ])
+    exit(1)
 
 BASE = "https://zxmushroom63.github.io/reclick" #selfhosting is easy btw. or just blank this to force offline
 
@@ -47,7 +56,7 @@ def background_update():
             return #cancel the update bro, shits over
     with open("updated/complete", "w") as f:
         f.write("complete")
-    print("Backgroun update done.")
+    print("Background update done.")
 
 if ENABLE_AUTOUPDATE:
     update = threading.Thread(target=background_update)
@@ -58,8 +67,35 @@ class Interop:
         return zx_packaging.get_games()
     def internal_update_library(self):
         zx_packaging.update_games_internal()
-    def launch_async(self, config_obj):
-        zx_launching.launch_game(config_obj, True)
+    def launch_async(self, config_obj, modded, flags):
+        zx_launching.launch_game(config_obj, modded, flags)
+    def close_async(self, config_obj):
+        zx_launching.close_game(config_obj)
+    def read_cfg(self):
+        return zx_packaging.read_cfg()
+    def write_cfg(self, obj):
+        zx_packaging.write_conf(obj)
+    def generate_steam_id(self):
+        return zx_packaging.mk_steam_uuid()
+    def get_nics(self):
+        out = {}
+        interfaces = psutil.net_if_addrs()
+        for interface_name, address_list in interfaces.items():
+            out[interface_name] = []
+            for addr in address_list:
+                if addr.family == socket.AF_INET:
+                    out[interface_name].append(addr.address)
+        return out
+    def lanpatch(self, broadcastAddr):
+        penguin = not sys.platform.startswith("win")
+        if len(broadcastAddr) == 0 or penguin:
+            return
+        print(f"Running broadcast patch on: {broadcastAddr}")
+        import ctypes
+        ctypes.windll.shell32.ShellExecuteW(
+            None, "runas", "cmd", f".\\retconlib\\vlanpatch.bat {broadcastAddr}", root, 1
+        )
+        
 
 window = webview.create_window('reclick', 'app.html', js_api=Interop(), frameless=False)
-webview.start(debug=False if len(sys.argv) > 0 else True)
+webview.start(debug=True if len(sys.argv) > 0 else True)
