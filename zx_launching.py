@@ -10,6 +10,8 @@ import zx_packaging
 import psutil
 import re
 
+import xml.etree.ElementTree as ET
+
 def patch_path(search_dir):
     global_conf = zx_packaging.read_cfg()
     GSE_FORK_DLLS = [
@@ -92,15 +94,36 @@ def patch_path(search_dir):
         with open(cfg, "w") as x:
             x.write(global_conf["PhotonHost"])
     
-    pattern = re.compile(r"IPAddress\s*?=\s*?\"\d+?\.\d+?\.\d+?\.\d+?\"", flags=re.MULTILINE)
-    photonServerConfs = list(search_dir.rglob("PhotonServer.config"))
-    for cfg in photonServerConfs:
-        print(f"Patch photon server conf: {cfg}")
-        with open(cfg, "r", encoding="utf-8") as f:
-            content = f.read()
-        new_content = pattern.sub(f"IPAddress=\"{global_conf["HostAddress"]}\"", content)
-        with open(cfg, "w", encoding="utf-8") as f:
-            f.write(new_content)
+    if search_dir.parent.name.lower() == "deploy" and search_dir.name.lower() == "bin_win64": # and search_dir.joinpath("bin_Win32").exists()
+        print("Patching photon server configs...")
+        patternPub = re.compile(r"<setting.+?name=\"PublicIPAddress\".*?>.*?\n*?\s*?<value>\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?<\/value>", flags=re.MULTILINE)
+        patternMst = re.compile(r"<setting.+?name=\"MasterIPAddress\".*?>.*?\n*?\s*?<value>\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?<\/value>", flags=re.MULTILINE)
+        patternSrv = re.compile(r'(<(?:UDP|TCP)Listener\b[^>]*?\bIPAddress=")\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}("[^>]*?\bOverrideApplication\s*=\s*"(?:Game|Master)"[^>]*>)', flags=re.DOTALL)
+        photonLoadbalancingConfs = list(search_dir.parent.rglob("Photon.LoadBalancing.dll.config"))
+        photonServerConfs = list(search_dir.parent.rglob("PhotonServer.config"))
+        replacementPub = f"<setting name=\"PublicIPAddress\" serializeAs=\"String\">\n        <value>{global_conf["HostAddress"]}</value>"
+        replacementMst = f"<setting name=\"MasterIPAddress\" serializeAs=\"String\">\n        <value>{global_conf["HostAddress"]}</value>"
+        for cfg in photonLoadbalancingConfs:
+            print(f"Patch photon loadbalancing conf: {cfg}")
+            new_content = ""
+            with open(cfg, "r", encoding="utf-8") as f:
+                new_content = f.read()
+            new_content = patternPub.sub(replacementPub, new_content)
+            new_content = patternMst.sub(replacementMst, new_content)
+            with open(cfg, "w", encoding="utf-8") as f:
+                f.write(new_content)
+        for cfg in photonServerConfs:
+            print(f"Processing: {cfg}")
+            parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+            tree = ET.parse(cfg, parser=parser)
+            root = tree.getroot()
+            tags = root.findall(".//*[@OverrideApplication]")
+            for tag in tags:
+                if tag.get("IPAddress") is not None and tag.get("OverrideApplication") in ["Game", "Master"]:
+                    tag.set("IPAddress", global_conf["HostAddress"])
+            
+            ET.indent(root, space="    ")
+            tree.write(cfg, encoding="utf-8", xml_declaration=True)
 
 config_pid_map = {}
 def launch_game(config, modded, flags):
