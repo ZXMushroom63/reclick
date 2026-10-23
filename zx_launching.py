@@ -151,7 +151,10 @@ def launch_game(config, modded, flags):
         if penguin:
             subprocess.run(["pkexec", "sysctl", "-w", "net.ipv4.ip_unprivileged_port_start=80"], env=env)
         else:
-            subprocess.run(["taskkill", "/F", "/IM", fileName], check=True, capture_output=True, text=True)
+            try:
+                subprocess.run(["taskkill", "/F", "/IM", fileName], check=True, capture_output=True, text=True)
+            except:
+                pass
         
     print(command)
     try:
@@ -159,7 +162,7 @@ def launch_game(config, modded, flags):
         
         patch_path(containerPath)
         
-        process = subprocess.Popen(command, env=env, cwd=containerPath, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        process = subprocess.Popen(command, env=env, cwd=containerPath, creationflags=subprocess.CREATE_NEW_CONSOLE)
         config_pid_map[config["GamePath"]] = True
         
         try:

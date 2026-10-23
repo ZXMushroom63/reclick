@@ -1,4 +1,5 @@
 # ---THISISAVALIDFILEALLISGOOD---
+import shutil
 import random
 import json
 import pathlib
@@ -97,6 +98,10 @@ def get_games():
         handle = open(f, "r")
         out[str(f)] = handle.read()
         handle.close()
+        
+        obj = json.loads(out[str(f)])
+        if not pathlib.Path(out["GamePath"]).exists():
+           shutil.remove(f)
     return out
 
 def mk_steam_uuid():

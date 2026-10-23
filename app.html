@@ -530,7 +530,7 @@
                 gameContent.appendChild(launchWrapper);
 
                 const gameTitle = document.createElement("h3");
-                const parts = json.GamePath.split("/");
+                const parts = json.GamePath.split("/").map(x => x.split("\\")).flat();
                 gameTitle.innerText = parts[parts.length - 1].replace(".exe", "");
                 gameDetails.appendChild(gameTitle);
                 const gameInfo = document.createElement("small");
