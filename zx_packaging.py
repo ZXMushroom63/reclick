@@ -72,9 +72,10 @@ def update_games_internal():
                     pass
         with open(cwd.joinpath("reclick.json"), "w") as f:
             f.write(json.dumps({
-                "GamePath": str(game),
+                "GamePath": str(game.relative_to(cwd)),
                 "AppID": appid,
                 "Arguments": "",
+                "Color": "none",
                 "Tags": make_tags({
                     "Positron": lambda _: cwd.joinpath("needs_photon_address.txt").exists(), #custom photon server patch
                     "PhotonRedirector": lambda _: len(list(cwd.joinpath("BepInEx").joinpath("plugins").rglob("PhotonRedirector.dll"))) > 0,
@@ -101,11 +102,11 @@ def get_games():
         
         try:
             obj = json.loads(out[str(f)])
-            if not pathlib.Path(obj["GamePath"]).exists():
-                shutil.remove(f)
+            if not f.parent.joinpath(pathlib.Path(obj["GamePath"])).exists():
+                f.unlink(True)
                 del out[str(f)]
         except:
-            shutil.remove(f)
+            f.unlink(True)
             del out[str(f)]
     return out
 

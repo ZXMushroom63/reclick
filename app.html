@@ -483,6 +483,7 @@
                     log_to_console(games[cfgPath]);
                     buttonMaps.get(cfgPath).forEach(button => button.classList.add("disabled"));
                     await window.pywebview.api.launch_async(
+                        cfgPath,
                         JSON.parse(games[cfgPath]),
                         true,
                         extraLaunchArgs || []

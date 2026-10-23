@@ -68,8 +68,8 @@ class Interop:
         return zx_packaging.get_games()
     def internal_update_library(self):
         zx_packaging.update_games_internal()
-    def launch_async(self, config_obj, modded, flags):
-        zx_launching.launch_game(config_obj, modded, flags)
+    def launch_async(self, configPath, config_obj, modded, flags):
+        zx_launching.launch_game(configPath, config_obj, modded, flags)
     def close_async(self, config_obj):
         zx_launching.close_game(config_obj)
     def read_cfg(self):

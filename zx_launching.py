@@ -126,13 +126,14 @@ def patch_path(search_dir):
             tree.write(cfg, encoding="utf-8", xml_declaration=True)
 
 config_pid_map = {}
-def launch_game(config, modded, flags):
+def launch_game(configPath, config, modded, flags):
     global config_pid_map
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
-    command = [str(pathlib.Path(config["GamePath"]).absolute())]
+    gamePath = pathlib.Path(configPath).parent.joinpath(pathlib.Path(config["GamePath"]))
+    command = [str(gamePath.absolute())]
     #dedupe(config["GamePath"])
-    fileName = pathlib.Path(config["GamePath"]).name
+    fileName = gamePath.name
     if penguin:
         command.insert(0, "wine")
     env["WINEDEBUG"] = "-all"
@@ -145,7 +146,8 @@ def launch_game(config, modded, flags):
     if shutil.which("nvidia-offload"):
         command.insert(0, "nvidia-offload")
     command = command + flags
-    old_portstart = subprocess.run(["sysctl", "-n", "net.ipv4.ip_unprivileged_port_start"], capture_output=True, text=True).stdout.strip()
+    old_portstart = 1024
+    # subprocess.run(["sysctl", "-n", "net.ipv4.ip_unprivileged_port_start"], capture_output=True, text=True).stdout.strip()
     
     if "PhotonServer4" in config["Tags"] or "PhotonServer5" in config["Tags"]:
         if penguin:
@@ -158,17 +160,17 @@ def launch_game(config, modded, flags):
         
     print(command)
     try:
-        containerPath = pathlib.Path(config["GamePath"]).parent
+        containerPath = gamePath.parent
         
         patch_path(containerPath)
         
-        opts = {
+        kwargs = {
             "env": env,
             "cwd": containerPath
         }
         if not penguin:
-            opts["creationflags"] = subprocess.CREATE_NEW_CONSOLE
-        process = subprocess.Popen(command, **opts)
+            kwargs["creationflags"] = subprocess.CREATE_NEW_CONSOLE
+        process = subprocess.Popen(command, **kwargs)
         config_pid_map[config["GamePath"]] = True
         
         try:
