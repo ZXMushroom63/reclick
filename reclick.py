@@ -85,4 +85,4 @@ def on_closed():
 window = webview.create_window('reclick', 'app.html', js_api=Interop(), frameless=False)
 window.events.closed += on_closed
 
-webview.start(debug=True if len(sys.argv) > 0 else True)
+webview.start(debug=False if len(sys.argv) > 0 else True)
