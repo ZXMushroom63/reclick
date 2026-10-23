@@ -99,9 +99,14 @@ def get_games():
         out[str(f)] = handle.read()
         handle.close()
         
-        obj = json.loads(out[str(f)])
-        if not pathlib.Path(out["GamePath"]).exists():
-           shutil.remove(f)
+        try:
+            obj = json.loads(out[str(f)])
+            if not pathlib.Path(obj["GamePath"]).exists():
+                shutil.remove(f)
+                del out[str(f)]
+        except:
+            shutil.remove(f)
+            del out[str(f)]
     return out
 
 def mk_steam_uuid():

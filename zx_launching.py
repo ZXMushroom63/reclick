@@ -162,7 +162,13 @@ def launch_game(config, modded, flags):
         
         patch_path(containerPath)
         
-        process = subprocess.Popen(command, env=env, cwd=containerPath, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        opts = {
+            "env": env,
+            "cwd": containerPath
+        }
+        if not penguin:
+            opts["creationflags"] = subprocess.CREATE_NEW_CONSOLE
+        process = subprocess.Popen(command, **opts)
         config_pid_map[config["GamePath"]] = True
         
         try:

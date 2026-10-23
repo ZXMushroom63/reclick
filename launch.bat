@@ -9,4 +9,5 @@ if exist "%SUBDIR%" (
     TIMEOUT 1
     RMDIR /S /Q "%SUBDIR%"
 )
-start /B python reclick.py
+start "" pythonw.exe reclick.py
+exit
