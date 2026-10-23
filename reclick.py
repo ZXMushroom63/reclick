@@ -93,8 +93,15 @@ class Interop:
             return
         print(f"Running broadcast patch on: {broadcastAddr}")
         import ctypes
+        parameters = f'/c ".\\retconlib\\vlanpatch.bat" {broadcastAddr}'
+
         ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", "cmd", f".\\retconlib\\vlanpatch.bat {broadcastAddr}", root, 1
+            None,
+            "runas",
+            "cmd.exe",
+            parameters,
+            root,
+            1
         )
         
 def on_closed():
