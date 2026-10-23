@@ -72,6 +72,7 @@ def update_games_internal():
                     pass
         with open(cwd.joinpath("reclick.json"), "w") as f:
             f.write(json.dumps({
+                "Name": game.name.replace(".exe", ""),
                 "GamePath": str(game.relative_to(cwd)),
                 "AppID": appid,
                 "Arguments": "",

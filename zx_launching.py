@@ -37,7 +37,9 @@ def patch_path(search_dir):
             pass
         JT += 1
         
-    usercfgs = list(search_dir.rglob("configs.user.ini"))
+    usercfgs = []
+    usercfgs.extend(list(search_dir.rglob("configs.user.ini")))
+    usercfgs.extend(list(search_dir.rglob("configs.main.ini")))
 
     ST = 0
     for cfg in usercfgs:
@@ -63,6 +65,12 @@ def patch_path(search_dir):
                     out.append(f"account_steamid={global_conf["SteamID"]}")
                     out.append("")
                     SD = True
+            elif qLn.startswith("record_playtime="):
+                out.append(f"record_playtime=1")
+                out.append("")
+            elif qLn.startswith("local_save_path="):
+                out.append(f"local_save_path=retLocalSaves")
+                out.append("")
             elif qLn.startswith("["):
                 out.append("")
                 out.append(qLn)
