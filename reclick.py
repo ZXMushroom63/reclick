@@ -11,8 +11,6 @@ from pathlib import Path
 import subprocess
 sys.path.append(Path(__file__).resolve().parent) #fix imports
 root = Path(__file__).resolve().parent
-import zx_packaging
-import zx_launching
 
 try:
     import requests
@@ -22,6 +20,9 @@ except Exception as e:
     print(e)
     subprocess.run(["python", "-m", "pip", "install", "--trusted-host", "pypi.org", "--trusted-host", "files.pythonhosted.org", "pywebview", "requests", "psutil" ])
     exit(1)
+
+import zx_packaging
+import zx_launching
 
 BASE = "https://zxmushroom63.github.io/reclick" #selfhosting is easy btw. or just blank this to force offline
 
