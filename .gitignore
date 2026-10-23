@@ -2,3 +2,4 @@ EVERYTHING/
 *.pyc
 __pycache__/
 reclick.root.json
+stuff/
