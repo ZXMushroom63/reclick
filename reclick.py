@@ -94,14 +94,22 @@ class Interop:
             return
         print(f"Running broadcast patch on: {broadcastAddr}")
         import ctypes
-        parameters = f'/c ".\\retconlib\\vlanpatch.bat" {broadcastAddr}'
+        import os
+
+        target_dir = str(root) if 'root' in locals() and root else os.getcwd()
+        bat_relative_path = ".\\retconlib\\vlanpatch.bat"
+
+        parameters = f'/c cd /d "{target_dir}" && "{bat_relative_path}" {broadcastAddr}'
+
+        print(f"DEBUG: Target Dir: {target_dir}")
+        print(f"DEBUG: Parameters: {parameters}")
 
         ctypes.windll.shell32.ShellExecuteW(
             None,
             "runas",
             "cmd.exe",
             parameters,
-            root,
+            target_dir,
             1
         )
         
