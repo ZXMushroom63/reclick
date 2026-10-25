@@ -1,611 +1,721 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>retcon4</title>
+        <style>
+            * {
+                background-color: rgb(6, 4, 6);
+                color: white;
+                font-family: sans-serif;
+                margin: 0;
+                padding: 0;
+            }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>retcon4</title>
-    <style>
-        * {
-            background-color: rgb(6, 4, 6);
-            color: white;
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+            button {
+                padding: 4px;
+                border: 1px solid white;
+                border-radius: 4px;
+                background-color: rgba(0, 0, 0, 0);
+                transition: background-color 0.1s;
+                cursor: pointer;
+            }
 
-        button {
-            padding: 4px;
-            border: 1px solid white;
-            border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0);
-            transition: background-color 0.1s;
-            cursor: pointer;
-        }
+            button:hover {
+                background-color: rgb(75, 75, 75);
+            }
 
-        button:hover {
-            background-color: rgb(75, 75, 75);
-        }
+            button:active {
+                background-color: rgb(52, 52, 52);
+            }
 
-        button:active {
-            background-color: rgb(52, 52, 52);
-        }
+            .glowy {
+                text-shadow: 0px 0px 30px;
+            }
 
+            .crt {
+                filter: saturate(25) brightness(0.5) contrast(1.8) brightness(7);
+            }
 
+            .crt::after {
+                content: " ";
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                background: rgba(16, 18, 18, 0.1);
+                opacity: 0;
+                z-index: 2;
+                pointer-events: none;
+            }
 
-        .glowy {
-            text-shadow: 0px 0px 30px;
-        }
-
-        .crt {
-            filter: saturate(25) brightness(0.5) contrast(1.8) brightness(7);
-        }
-
-        .crt::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: rgba(16, 18, 18, 0.1);
-            opacity: 0;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        .crt::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            /* background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+            .crt::before {
+                content: " ";
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                /* background: linear-gradient(rgba(18, 16, 16, 0) 50%,
                     rgba(0, 0, 0, 0.25) 50%),
                 linear-gradient(90deg,
                     rgba(255, 0, 0, 0.02),
                     rgba(0, 255, 255, 0.07),
                     rgba(0, 0, 255, 0.02)); */
-            background: linear-gradient(rgba(18, 18, 16, 0) 50%,
-                    rgba(0, 4, 4, 0.2) 50%),
-                linear-gradient(90deg,
-                    rgba(255, 255, 0, 0.02),
-                    rgba(255, 0, 255, 0.02),
-                    rgba(0, 255, 255, 0.02));
-            z-index: 2;
-            background-size: 100% 5px, 5px 100%;
-            pointer-events: none;
-        }
-
-        html {
-            width: 100vw;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            width: 100vw;
-            height: 100vh;
-            padding: 0rem;
-        }
-
-        #top_bar {
-            height: 3rem;
-        }
-
-        #top_bar {
-            width: 100vw;
-            border-bottom: 1px solid white;
-        }
-
-        #devlogs {
-            position: fixed;
-            z-index: 9999;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            background: transparent;
-            pointer-events: none;
-            user-select: none;
-            color: white;
-            font-family: monospace;
-            opacity: 20%;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        #title {
-            height: 3rem;
-            line-height: 3rem;
-            font-size: 2.5rem;
-            margin-left: 0.4rem;
-            display: inline-block;
-            text-align: left;
-            justify-content: center;
-            justify-self: center;
-            margin-right: auto;
-        }
-
-        #repatch_section {
-            width: calc(100vw - 1rem);
-            border-bottom: 1px solid white;
-            padding: 0.5rem;
-            height: 1.5rem;
-        }
-
-        #bottom_container {
-            height: calc(100vh - 5.5rem - 2px);
-            width: 100vw;
-        }
-
-        #sectioner {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            border-collapse: collapse;
-        }
-
-        tr {
-            border-collapse: collapse;
-        }
-
-        #leftOuter {
-            border-right: 1px solid white;
-            width: 50%;
-            align-content: start;
-            padding: 0;
-            margin: 0;
-        }
-
-        #left {
-            height: calc(100vh - 5.5rem - 2px - 2rem);
-            width: calc(100% - 2rem);
-            overflow-x: hidden;
-            overflow-y: scroll;
-            margin: 0;
-            padding: 1rem;
-        }
-
-        ::-webkit-scrollbar {
-            visibility: hidden;
-            display: none;
-        }
-
-        .game {
-            border: 1px solid white;
-            border-radius: 6px;
-            padding: 8px;
-            cursor: pointer;
-            margin-bottom: 1rem;
-        }
-
-        .game:last-child {
-            margin-bottom: 0rem;
-        }
-
-        .internal,
-        .internal * {
-            border-color: rgb(177, 180, 200);
-            color: slateblue;
-            opacity: 90%;
-        }
-
-        .game h3,
-        .game small {
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            max-width: calc(50vw - 8rem);
-            text-overflow: ellipsis;
-        }
-
-        #right {
-            align-items: start;
-            vertical-align: top;
-            align-content: start;
-            text-align: center;
-        }
-
-        :focus {
-            outline: none;
-            /* text-decoration: underline; */
-        }
-        input:focus, select:focus {
-            outline: none;
-            background-color: rgb(55, 55, 55);
-        }
-
-        input, select {
-            display: inline-block;
-            font-family: monospace;
-            border: 1px solid rgb(200, 200, 200);
-            padding: 4px;
-            width: 20vw;
-            border-radius: 0.5rem;
-            outline: transparent;
-            text-align: center;
-            text-caret-shape: underline;
-            text-caret-animation: manual;
-        }
-
-        select {
-            cursor: pointer;
-        }
-
-        ::selection {
-            background-color: rgb(255, 255, 255);
-            border: 1px solid white;
-            color: black;
-            text-decoration: none;
-        }
-        #escape {
-            display: none;
-        }
-
-        @media only screen and (max-width: 700px) {
-            #right {
-                display: none;
+                background:
+                    linear-gradient(
+                        rgba(18, 18, 16, 0) 50%,
+                        rgba(0, 4, 4, 0.2) 50%
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(255, 255, 0, 0.02),
+                        rgba(255, 0, 255, 0.02),
+                        rgba(0, 255, 255, 0.02)
+                    );
+                z-index: 2;
+                background-size:
+                    100% 5px,
+                    5px 100%;
+                pointer-events: none;
             }
 
-            body.changingsettings #leftOuter {
-                display: none;
+            html {
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
             }
 
-            body.changingsettings #right {
-                display: table-cell;
+            body {
+                width: 100vw;
+                height: 100vh;
+                padding: 0rem;
+            }
+
+            #top_bar {
+                height: 3rem;
+            }
+
+            #top_bar {
+                width: 100vw;
+                border-bottom: 1px solid white;
+            }
+
+            #devlogs {
+                position: fixed;
+                z-index: 9999;
+                width: 100vw;
+                height: 100vh;
+                top: 0;
+                left: 0;
+                background: transparent;
+                pointer-events: none;
+                user-select: none;
+                color: white;
+                font-family: monospace;
+                opacity: 20%;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            #title {
+                height: 3rem;
+                line-height: 3rem;
+                font-size: 2.5rem;
+                margin-left: 0.4rem;
+                display: inline-block;
+                text-align: left;
+                justify-content: center;
+                justify-self: center;
+                margin-right: auto;
+            }
+
+            #repatch_section {
+                width: calc(100vw - 1rem);
+                border-bottom: 1px solid white;
+                padding: 0.5rem;
+                height: 1.5rem;
+            }
+
+            #bottom_container {
+                height: calc(100vh - 5.5rem - 2px);
+                width: 100vw;
+            }
+
+            #sectioner {
                 width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                border-collapse: collapse;
             }
 
-            body.changingsettings #escape {
-                display: inline;
+            tr {
+                border-collapse: collapse;
+            }
+
+            #leftOuter {
+                border-right: 1px solid white;
+                width: 50%;
+                align-content: start;
+                padding: 0;
+                margin: 0;
+            }
+
+            #left {
+                height: calc(100vh - 5.5rem - 2px - 2rem);
+                width: calc(100% - 2rem);
+                overflow-x: hidden;
+                overflow-y: scroll;
+                margin: 0;
+                padding: 1rem;
+            }
+
+            ::-webkit-scrollbar {
+                visibility: hidden;
+                display: none;
+            }
+
+            .game {
+                border: 1px solid white;
+                border-radius: 6px;
+                padding: 8px;
+                cursor: pointer;
+                margin-bottom: 1rem;
+            }
+
+            .game:last-child {
+                margin-bottom: 0rem;
+            }
+
+            .internal,
+            .internal * {
+                border-color: rgb(177, 180, 200);
+                color: slateblue;
+                opacity: 90%;
             }
 
             .game h3,
             .game small {
-                max-width: calc(100vw - 8rem);
+                display: block;
+                white-space: nowrap;
+                overflow: hidden;
+                max-width: calc(50vw - 8rem);
+                text-overflow: ellipsis;
             }
-        }
 
-        .launch_btn {
-            display: inline-block;
-            font-size: 1.25rem;
-            height: calc(100% - 1rem);
-            margin-left: 0.5rem;
-            width: 4rem;
-        }
-
-        button.disabled {
-            opacity: 55%;
-        }
-    </style>
-</head>
-
-<body class="crt">
-    <div id="top_bar">
-        <h1 id="title" class="glowy">retcon4</h1>
-    </div>
-    <div id="repatch_section">
-        <button id="repatch_btn">Virtual LAN Fix</button>
-        <span style="float: right;">
-            Network Interface:
-            <select data-setting="HostAddress">
-                <option>todo: add NIC select option here</option>
-            </select>
-        </span>
-    </div>
-
-    <div id="bottom_container">
-        <table id="sectioner">
-            <tr>
-                <td id="leftOuter">
-                    <div id="left">
-                        <div class="game">
-                            <table>
-                                <tr>
-                                    <td style="width: 100%">
-                                        <h3>Rounds.exe</h3>
-                                        <small>AppID: 480 | Unity, BepInEx, PhotonPUN</small>
-                                    </td>
-                                    <td>
-                                        <button class="launch_btn">play</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                </td>
-                <td id="right">
-                    username: <input data-setting="Username"><br>
-                    steam id: <input data-setting="SteamID">
-                    <button id="randomise_steam_id">⚂</button><br>
-                    custom photon server: <input data-setting="PhotonHost"><br>
-                    replace steam GSE DLLs: <input data-setting="ReplaceSteamAPI"><br>
-                    <br>
-                    <small>pretend there are other game settings here</small><br>
-                    <button id="escape">escape the settings menu</button>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <div id="devlogs">
-        RECLICK v4
-    </div>
-
-    <!-- ---THISISAVALIDFILEALLISGOOD--- -->
-    <script>
-        let games = {};
-        let games_internal = [];
-        const waitForPywebview = async () => {
-            return new Promise((resolve) => {
-                const interval = setInterval(() => {
-                    if (typeof pywebview !== 'undefined' && pywebview.api && Object.keys(pywebview.api).length > 0) {
-                        clearInterval(interval);
-                        resolve();
-                    }
-                }, 50);
-            });
-        };
-        const logs_buffer = ["RECLICK v4"];
-        const logs = document.querySelector("#devlogs");
-        function log_to_console(x) {
-            logs_buffer.push(x);
-            if (logs_buffer.length > 40) {
-                logs_buffer.splice(0, 1);
+            .game.selected h3 {
+                text-decoration: underline;
             }
-            logs.innerText = "";
-            draw_bg();
-            console.log(x);
-        }
-        async function draw_bg() {
-            logs.innerText = "";
-            for (let i = 0; i < logs_buffer.length; i++) {
-                await sleep(100);
-                logs.innerText += logs_buffer[i] + "\n";
+
+            #right {
+                align-items: start;
+                vertical-align: top;
+                align-content: start;
+                text-align: center;
             }
-        }
-        const ignorelist = ["vmware", "virtual", "vm", "vir"];
-        const nameMapping = {
-            "ham": "Hamachi",
-            "wlp": "WiFi",
-            "wlan": "WiFi",
-            "eth": "Ethernet",
-            "en": "Ethernet",
-            "lo": "Local"
-        }
-        async function update_nic_list(inCf) {
-            const conf = inCf || await window.pywebview.api.read_cfg();
-            const targetAddress = conf["HostAddress"];
-            const nics = await window.pywebview.api.get_nics();
-            const dropdown = document.querySelector("[data-setting=HostAddress]");
-            dropdown.innerHTML = "";
-            Object.entries(nics).forEach(ent => {
-                let rawName = ent[0];
-                let chkName = ent[0].toLowerCase();
-                let displayName = ent[0];
-                const addresses = ent[1];
-                for (let i = 0; i < ignorelist.length; i++) {
-                    if (chkName.includes(ignorelist[i])) {
-                        return;
-                    }
+
+            :focus {
+                outline: none;
+                /* text-decoration: underline; */
+            }
+            input:focus,
+            select:focus {
+                outline: none;
+                background-color: rgb(55, 55, 55);
+            }
+
+            input,
+            select {
+                display: inline-block;
+                font-family: monospace;
+                border: 1px solid rgb(200, 200, 200);
+                padding: 4px;
+                width: 20vw;
+                border-radius: 0.5rem;
+                outline: transparent;
+                text-align: center;
+                text-caret-shape: underline;
+                text-caret-animation: manual;
+            }
+
+            select {
+                cursor: pointer;
+            }
+
+            ::selection {
+                background-color: rgb(255, 255, 255);
+                border: 1px solid white;
+                color: black;
+                text-decoration: none;
+            }
+            #escape {
+                display: none;
+            }
+
+            @media only screen and (max-width: 700px) {
+                #right {
+                    display: none;
                 }
-                Object.entries(nameMapping).forEach(mapper => {
-                    if (chkName.startsWith(mapper[0])) {
-                        displayName = mapper[1];
-                    }
+
+                body.changingsettings #leftOuter {
+                    display: none;
+                }
+
+                body.changingsettings #right {
+                    display: table-cell;
+                    width: 100%;
+                }
+
+                body.changingsettings #escape {
+                    display: inline;
+                }
+
+                .game h3,
+                .game small {
+                    max-width: calc(100vw - 8rem);
+                }
+            }
+
+            .launch_btn {
+                display: inline-block;
+                font-size: 1.25rem;
+                height: calc(100% - 1rem);
+                margin-left: 0.5rem;
+                width: 4rem;
+            }
+
+            button.disabled {
+                opacity: 55%;
+            }
+        </style>
+    </head>
+
+    <body class="crt">
+        <div id="top_bar">
+            <h1 id="title" class="glowy">retcon4</h1>
+        </div>
+        <div id="repatch_section">
+            <button id="repatch_btn">Virtual LAN Fix</button>
+            <span style="float: right">
+                Network Interface:
+                <select data-setting="HostAddress">
+                    <option>todo: add NIC select option here</option>
+                </select>
+            </span>
+        </div>
+
+        <div id="bottom_container">
+            <table id="sectioner">
+                <tr>
+                    <td id="leftOuter">
+                        <div id="left">
+                            <div class="game">
+                                <table>
+                                    <tr>
+                                        <td style="width: 100%">
+                                            <h3>Loading...</h3>
+                                            <small
+                                                >If this takes more than a second smth broke</small
+                                            >
+                                        </td>
+                                        <td>
+                                            <button class="launch_btn">
+                                                Wait
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                    <td id="right">
+                        username: <input data-setting="Username" /><br />
+                        steam id: <input data-setting="SteamID" />
+                        <button id="randomise_steam_id">⚂</button><br />
+                        custom photon server:
+                        <input data-setting="PhotonHost" /><br />
+                        replace steam GSE DLLs:
+                        <input data-setting="ReplaceSteamAPI" /><br />
+                        <br />
+                        <small>pretend there are other game settings here</small
+                        ><br />
+                        <button id="escape">escape the settings menu</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="devlogs">RECLICK v4</div>
+
+        <!-- ---THISISAVALIDFILEALLISGOOD--- -->
+        <script>
+            let games = {};
+            let games_internal = [];
+            const waitForPywebview = async () => {
+                return new Promise((resolve) => {
+                    const interval = setInterval(() => {
+                        if (
+                            typeof pywebview !== "undefined" &&
+                            pywebview.api &&
+                            Object.keys(pywebview.api).length > 0
+                        ) {
+                            clearInterval(interval);
+                            resolve();
+                        }
+                    }, 50);
                 });
-                addresses.forEach(addr => {
-                    const opt = document.createElement("option");
-                    opt.value = addr;
-                    opt.innerText = `${displayName}: ${addr}`
-                    opt.selected = targetAddress === addr;
-                    dropdown.appendChild(opt);
-                });
-            });
-        }
-        async function load_cfg(inCf) {
-            const conf = inCf || await window.pywebview.api.read_cfg();
-            await update_nic_list();
-            Object.entries(conf).forEach(ent => {
-                const settingTarget = document.querySelector(`[data-setting="${ent[0]}"]`);
-                if (settingTarget) {
-                    settingTarget.value = ent[1];
-                    settingTarget.onblur = ()=>{
-                        reload_cfg();
-                    }
-                    settingTarget.onkeydown = (e)=>{
-                        if (e.key === "Enter") {
-                            settingTarget.blur();
+            };
+            const logs_buffer = ["RECLICK v4"];
+            const logs = document.querySelector("#devlogs");
+            function log_to_console(x) {
+                logs_buffer.push(x);
+                if (logs_buffer.length > 40) {
+                    logs_buffer.splice(0, 1);
+                }
+                logs.innerText = "";
+                draw_bg();
+                console.log(x);
+            }
+            async function draw_bg() {
+                logs.innerText = "";
+                for (let i = 0; i < logs_buffer.length; i++) {
+                    await sleep(100);
+                    logs.innerText += logs_buffer[i] + "\n";
+                }
+            }
+            const ignorelist = ["vmware", "virtual", "vm", "vir"];
+            const nameMapping = {
+                ham: "Hamachi",
+                wlp: "WiFi",
+                wlan: "WiFi",
+                eth: "Ethernet",
+                en: "Ethernet",
+                lo: "Local",
+            };
+            async function update_nic_list(inCf) {
+                const conf = inCf || (await window.pywebview.api.read_cfg());
+                const targetAddress = conf["HostAddress"];
+                const nics = await window.pywebview.api.get_nics();
+                const dropdown = document.querySelector(
+                    "[data-setting=HostAddress]",
+                );
+                dropdown.innerHTML = "";
+                Object.entries(nics).forEach((ent) => {
+                    let rawName = ent[0];
+                    let chkName = ent[0].toLowerCase();
+                    let displayName = ent[0];
+                    const addresses = ent[1];
+                    for (let i = 0; i < ignorelist.length; i++) {
+                        if (chkName.includes(ignorelist[i])) {
+                            return;
                         }
                     }
-                }
-            });
-            return conf;
-        }
-        async function reload_cfg(inCf) {
-            const conf = inCf || await window.pywebview.api.read_cfg();
-            [...document.querySelectorAll(`[data-setting]`)].forEach(setting => {
-                conf[setting.getAttribute("data-setting")] = setting.value.trim();
-            });
-            console.log(conf);
-            await window.pywebview.api.write_cfg(conf);
-            await load_cfg(conf);
-            return conf;
-        }
-        let has_frida = false;
-        addEventListener("load", init);
-        async function init() {
-            await waitForPywebview();
-            has_frida = await window.pywebview.api.has_frida();
-            await update_games_internal();
-            redraw_games();
-            await load_cfg();
-            await window.pywebview.api.internal_update_library();
-            if (true) {
+                    Object.entries(nameMapping).forEach((mapper) => {
+                        if (chkName.startsWith(mapper[0])) {
+                            displayName = mapper[1];
+                        }
+                    });
+                    addresses.forEach((addr) => {
+                        const opt = document.createElement("option");
+                        opt.value = addr;
+                        opt.innerText = `${displayName}: ${addr}`;
+                        opt.selected = targetAddress === addr;
+                        dropdown.appendChild(opt);
+                    });
+                });
+            }
+            async function load_cfg(inCf) {
+                const conf = inCf || (await window.pywebview.api.read_cfg());
+                await update_nic_list();
+                Object.entries(conf).forEach((ent) => {
+                    const settingTarget = document.querySelector(
+                        `[data-setting="${ent[0]}"]`,
+                    );
+                    if (settingTarget) {
+                        settingTarget.value = ent[1];
+                        settingTarget.onblur = () => {
+                            reload_cfg();
+                        };
+                        settingTarget.onkeydown = (e) => {
+                            if (e.key === "Enter") {
+                                settingTarget.blur();
+                            }
+                        };
+                    }
+                });
+                return conf;
+            }
+            async function reload_cfg(inCf) {
+                const conf = inCf || (await window.pywebview.api.read_cfg());
+                [...document.querySelectorAll(`[data-setting]`)].forEach(
+                    (setting) => {
+                        conf[setting.getAttribute("data-setting")] =
+                            setting.value.trim();
+                    },
+                );
+                console.log(conf);
+                await window.pywebview.api.write_cfg(conf);
+                await load_cfg(conf);
+                return conf;
+            }
+            let has_frida = false;
+            let selectedGame = null;
+            addEventListener("load", init);
+            async function init() {
+                await waitForPywebview();
+                has_frida = await window.pywebview.api.has_frida();
                 await update_games_internal();
                 redraw_games();
-            }
-        }
-        async function update_games_internal() {
-            games = await window.pywebview.api.get_library();
-            games_internal = Object.entries(games)
-                .map(ent => Object.assign(
-                    { "ConfigPath": ent[0] },
-                    JSON.parse(ent[1])
-                ));
-        }
-        document.querySelector("#repatch_btn").addEventListener("click", async () => {
-        });
-        const buttonMaps = new Map();
-        function get_launcher_button(cfgPath, text, extraLaunchArgs, prefix) {
-            if (!buttonMaps.has(cfgPath)) {
-                buttonMaps.set(cfgPath, []);
-            }
-            const launchBtn = document.createElement("button");
-            launchBtn.classList.add("launch_btn");
-            launchBtn.innerText = text;
-            launchBtn.addEventListener("click", async () => {
-                if (launchBtn.classList.contains("disabled")) {
-                    await window.pywebview.api.close_async(
-                        JSON.parse(games[cfgPath])
-                    );
-		            launchBtn.blur();
-                    return;
+                await load_cfg();
+                await window.pywebview.api.internal_update_library();
+                if (true) {
+                    await update_games_internal();
+                    redraw_games();
                 }
-		        launchBtn.blur();
-                try {
-                    log_to_console(`Launching cfg: ${cfgPath}`);
-                    log_to_console(games[cfgPath]);
-                    buttonMaps.get(cfgPath).forEach(button => button.classList.add("disabled"));
-                    await window.pywebview.api.launch_async(
-                        cfgPath,
-                        JSON.parse(games[cfgPath]),
-                        true,
-                        extraLaunchArgs || [],
-                        prefix || []
-                    );
-                    log_to_console("Game exited!");
-                    buttonMaps.get(cfgPath).forEach(button => button.classList.remove("disabled"));
-                } catch (error) {
-                    buttonMaps.get(cfgPath).forEach(button => button.classList.remove("disabled"));
-                }
-            });
-            buttonMaps.get(cfgPath).push(launchBtn);
-            return launchBtn;
-        }
-        const INTERNALS = ["PhotonServer4", "PhotonServer5"];
-        const is_internal = tags => INTERNALS.reduce((prevVal, tag) => prevVal || tags.includes(tag), false);
-        const game_entry_map = new Map();
-        function draw_game(gameEntry, left) {
-            if (game_entry_map.has(gameEntry[0])) {
-                left.appendChild(game_entry_map.get(gameEntry[0]));
-                return;
             }
-            try {
-                const cfgPath = gameEntry[0];
-                const json = gameEntry[1];
-                const gameContainer = document.createElement("div");
-                gameContainer.addEventListener("click", (e)=>{
-                    if (e.target !== gameContainer) {
+            async function update_games_internal() {
+                games = await window.pywebview.api.get_library();
+                games_internal = Object.entries(games).map((ent) =>
+                    Object.assign({ ConfigPath: ent[0] }, JSON.parse(ent[1])),
+                );
+            }
+            document
+                .querySelector("#repatch_btn")
+                .addEventListener("click", async () => {});
+            const buttonMaps = new Map();
+            function get_launcher_button(
+                cfgPath,
+                text,
+                extraLaunchArgs,
+                prefix,
+            ) {
+                if (!buttonMaps.has(cfgPath)) {
+                    buttonMaps.set(cfgPath, []);
+                }
+                const launchBtn = document.createElement("button");
+                launchBtn.classList.add("launch_btn");
+                launchBtn.innerText = text;
+                launchBtn.addEventListener("click", async () => {
+                    if (launchBtn.classList.contains("disabled")) {
+                        await window.pywebview.api.close_async(
+                            JSON.parse(games[cfgPath]),
+                        );
+                        launchBtn.blur();
                         return;
                     }
-                    document.body.classList.toggle("changingsettings");
-                });
-                gameContainer.classList.add("game");
-                const intern = is_internal(json.Tags);
-                if (intern) {
-                    gameContainer.classList.add("internal");
-                }
-                const gameContentWrapper = document.createElement("table");
-                gameContainer.appendChild(gameContentWrapper);
-                const gameContent = document.createElement("tr");
-                gameContentWrapper.appendChild(gameContent);
-                const gameDetails = document.createElement("td");
-                const launchWrapper = document.createElement("td");
-                gameContent.appendChild(gameDetails);
-                gameDetails.style.width = "100%";
-                gameContent.appendChild(launchWrapper);
-
-                const gameTitle = document.createElement("h3");
-                const parts = json.GamePath.split("/").map(x => x.split("\\")).flat();
-                gameTitle.innerText = parts[parts.length - 1].replace(".exe", "");
-                gameDetails.appendChild(gameTitle);
-                const gameInfo = document.createElement("small");
-                gameInfo.innerText = `${json.AppID !== 0 ? `AppID: ${json.AppID} | ` : ""}${json.Tags.join(", ") || "No Tags"}`;
-                gameDetails.appendChild(gameInfo);
-                const hasPhoton4 = games_internal.find(x => x.Tags.includes("PhotonServer4"));
-                const hasPhoton5 = games_internal.find(x => x.Tags.includes("PhotonServer5"));
-                if (json.Tags.includes("Positron") && hasPhoton4) {
-                    launchWrapper.style.minWidth = "9rem";
-                    launchWrapper.appendChild(get_launcher_button(games_internal.find(x => x.Tags.includes("PhotonServer4")).ConfigPath, "Host", ["/run", "LoadBalancing"]));
-                }
-                else if (json.Tags.includes("PhotonServerSettings") && hasPhoton5) {
-                    launchWrapper.style.minWidth = "9rem";
-                    if (has_frida) {
-                        launchWrapper.appendChild(get_launcher_button(games_internal.find(x => x.Tags.includes("PhotonServer5")).ConfigPath, "Host", ["-l", "hook.js", "--", "/run", "LoadBalancing"], ["frida", "-f"]));
-                    } else {
-                        const fridaBtn = document.createElement("button");
-                        fridaBtn.innerText = "Host ⚠";
-                        fridaBtn.addEventListener("click", ()=>{
-                            alert("You need to install frida-tools into python to self-host Photon v5");
-                        });
-                        launchWrapper.appendChild(fridaBtn);
+                    launchBtn.blur();
+                    try {
+                        log_to_console(`Launching cfg: ${cfgPath}`);
+                        log_to_console(games[cfgPath]);
+                        buttonMaps
+                            .get(cfgPath)
+                            .forEach((button) =>
+                                button.classList.add("disabled"),
+                            );
+                        await window.pywebview.api.launch_async(
+                            cfgPath,
+                            JSON.parse(games[cfgPath]),
+                            true,
+                            extraLaunchArgs || [],
+                            prefix || [],
+                        );
+                        log_to_console("Game exited!");
+                        buttonMaps
+                            .get(cfgPath)
+                            .forEach((button) =>
+                                button.classList.remove("disabled"),
+                            );
+                    } catch (error) {
+                        buttonMaps
+                            .get(cfgPath)
+                            .forEach((button) =>
+                                button.classList.remove("disabled"),
+                            );
                     }
+                });
+                buttonMaps.get(cfgPath).push(launchBtn);
+                return launchBtn;
+            }
+            const INTERNALS = ["PhotonServer4", "PhotonServer5"];
+            const is_internal = (tags) =>
+                INTERNALS.reduce(
+                    (prevVal, tag) => prevVal || tags.includes(tag),
+                    false,
+                );
+            const game_entry_map = new Map();
+            function draw_game(gameEntry, left) {
+                if (game_entry_map.has(gameEntry[0])) {
+                    left.appendChild(game_entry_map.get(gameEntry[0]));
+                    return;
                 }
+                try {
+                    const cfgPath = gameEntry[0];
+                    const json = gameEntry[1];
+                    const gameContainer = document.createElement("div");
+                    if (cfgPath === selectedGame) {
+                        gameContainer.classList.add("selected");
+                    }
+                    gameContainer.addEventListener("click", (e) => {
+                        if (e.target.tagName.toLowerCase() === "button") {
+                            return;
+                        }
+                        document.body.classList.toggle("changingsettings");
+                        [...document.querySelectorAll(".selected")].forEach(
+                            (x) => x.classList.remove("selected"),
+                        );
+                        gameContainer.classList.add("selected");
+                        selectedGame = cfgPath;
+                    });
+                    gameContainer.classList.add("game");
+                    const intern = is_internal(json.Tags);
+                    if (intern) {
+                        gameContainer.classList.add("internal");
+                    }
+                    const gameContentWrapper = document.createElement("table");
+                    gameContainer.appendChild(gameContentWrapper);
+                    const gameContent = document.createElement("tr");
+                    gameContentWrapper.appendChild(gameContent);
+                    const gameDetails = document.createElement("td");
+                    const launchWrapper = document.createElement("td");
+                    gameContent.appendChild(gameDetails);
+                    gameDetails.style.width = "100%";
+                    gameContent.appendChild(launchWrapper);
 
-                const launchBtn = get_launcher_button(cfgPath, intern ? "Test" : "Play");
-                launchWrapper.appendChild(launchBtn);
-                game_entry_map.set(cfgPath, gameContainer);
-                left.appendChild(gameContainer);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        function redraw_games() {
-            const left = document.querySelector("#left");
-            const oldScroll = left.scrollTop;
-            [...document.querySelectorAll(".game")].forEach(x => x.remove());
+                    const gameTitle = document.createElement("h3");
+                    const parts = json.GamePath.split("/")
+                        .map((x) => x.split("\\"))
+                        .flat();
+                    gameTitle.innerText = parts[parts.length - 1].replace(
+                        ".exe",
+                        "",
+                    );
+                    gameDetails.appendChild(gameTitle);
+                    const gameInfo = document.createElement("small");
+                    gameInfo.innerText = `${json.AppID !== 0 ? `AppID: ${json.AppID} | ` : ""}${json.Tags.join(", ") || "No Tags"}`;
+                    gameDetails.appendChild(gameInfo);
+                    const hasPhoton4 = games_internal.find((x) =>
+                        x.Tags.includes("PhotonServer4"),
+                    );
+                    const hasPhoton5 = games_internal.find((x) =>
+                        x.Tags.includes("PhotonServer5"),
+                    );
+                    if (json.Tags.includes("Positron") && hasPhoton4) {
+                        launchWrapper.style.minWidth = "9rem";
+                        launchWrapper.appendChild(
+                            get_launcher_button(
+                                games_internal.find((x) =>
+                                    x.Tags.includes("PhotonServer4"),
+                                ).ConfigPath,
+                                "Host",
+                                ["/run", "LoadBalancing"],
+                            ),
+                        );
+                    } else if (
+                        json.Tags.includes("PhotonServerSettings") &&
+                        hasPhoton5
+                    ) {
+                        launchWrapper.style.minWidth = "9rem";
+                        if (has_frida) {
+                            launchWrapper.appendChild(
+                                get_launcher_button(
+                                    games_internal.find((x) =>
+                                        x.Tags.includes("PhotonServer5"),
+                                    ).ConfigPath,
+                                    "Host",
+                                    [
+                                        "-l",
+                                        "hook.js",
+                                        "--",
+                                        "/run",
+                                        "LoadBalancing",
+                                    ],
+                                    ["frida", "-f"],
+                                ),
+                            );
+                        } else {
+                            const fridaBtn = document.createElement("button");
+                            fridaBtn.innerText = "Host ⚠";
+                            fridaBtn.addEventListener("click", () => {
+                                alert(
+                                    "You need to install frida-tools into python to self-host Photon v5",
+                                );
+                            });
+                            launchWrapper.appendChild(fridaBtn);
+                        }
+                    }
 
-            Object.entries(games).map(ent => [ent[0], JSON.parse(ent[1])]).sort((a, b) => is_internal(a[1].Tags) - is_internal(b[1].Tags)).forEach(ent => draw_game(ent, left));
-            log_to_console("Redrew games panel");
-        }
-        addEventListener("keydown", (e) => {
-            if (e.key === "p") {
-                redraw_games();
+                    const launchBtn = get_launcher_button(
+                        cfgPath,
+                        intern ? "Test" : "Play",
+                    );
+                    launchWrapper.appendChild(launchBtn);
+                    game_entry_map.set(cfgPath, gameContainer);
+                    left.appendChild(gameContainer);
+                } catch (error) {
+                    console.error(error);
+                }
             }
-        });
-        function sleep(ms) {
-            return new Promise((res, rej)=>{
-                setTimeout(()=>{
-                    res();
-                }, ms);
+            function redraw_games() {
+                const left = document.querySelector("#left");
+                const oldScroll = left.scrollTop;
+                [...document.querySelectorAll(".game")].forEach((x) =>
+                    x.remove(),
+                );
+
+                Object.entries(games)
+                    .map((ent) => [ent[0], JSON.parse(ent[1])])
+                    .sort(
+                        (a, b) =>
+                            is_internal(a[1].Tags) - is_internal(b[1].Tags),
+                    )
+                    .forEach((ent) => {
+                        selectedGame ||= ent[0];
+                        draw_game(ent, left);
+                    });
+                log_to_console("Redrew games panel");
+            }
+            addEventListener("keydown", (e) => {
+                if (e.key === "p") {
+                    redraw_games();
+                }
             });
-        }
-        const repatchBtn = document.querySelector("#repatch_btn");
-        repatchBtn.addEventListener("click", async (e)=>{
-            if (repatchBtn.classList.contains("disabled")) {
-                return;
+            function sleep(ms) {
+                return new Promise((res, rej) => {
+                    setTimeout(() => {
+                        res();
+                    }, ms);
+                });
             }
-            repatchBtn.classList.add("disabled");
-            await sleep(100);
-            await window.pywebview.api.lanpatch(document.querySelector("[data-setting=HostAddress]").value || "");
-            repatchBtn.classList.remove("disabled");
-        });
-        document.querySelector("#escape").addEventListener("click", ()=>{
-            document.body.classList.remove("changingsettings");
-        });
-        document.querySelector("#randomise_steam_id").addEventListener("click", async (e)=>{
-            document.querySelector("[data-setting=SteamID]").value = await window.pywebview.api.generate_steam_id();
-            document.querySelector("[data-setting=SteamID]").select();
-            document.querySelector("[data-setting=SteamID]").blur();
-        });
-    </script>
-</body>
-
+            const repatchBtn = document.querySelector("#repatch_btn");
+            repatchBtn.addEventListener("click", async (e) => {
+                if (repatchBtn.classList.contains("disabled")) {
+                    return;
+                }
+                repatchBtn.classList.add("disabled");
+                await sleep(100);
+                await window.pywebview.api.lanpatch(
+                    document.querySelector("[data-setting=HostAddress]")
+                        .value || "",
+                );
+                repatchBtn.classList.remove("disabled");
+            });
+            document.querySelector("#escape").addEventListener("click", () => {
+                document.body.classList.remove("changingsettings");
+            });
+            document
+                .querySelector("#randomise_steam_id")
+                .addEventListener("click", async (e) => {
+                    document.querySelector("[data-setting=SteamID]").value =
+                        await window.pywebview.api.generate_steam_id();
+                    document.querySelector("[data-setting=SteamID]").select();
+                    document.querySelector("[data-setting=SteamID]").blur();
+                });
+        </script>
+    </body>
 </html>
