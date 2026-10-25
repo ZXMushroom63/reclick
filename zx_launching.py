@@ -132,6 +132,18 @@ def patch_path(search_dir):
             
             ET.indent(root, space="    ")
             tree.write(cfg, encoding="utf-8", xml_declaration=True)
+    
+    photonSS = list(search_dir.rglob("uk.1a3.photonserversettings.cfg"))
+    for cfg in photonSS:
+        new_content = ""
+        with open(cfg, "r", encoding="utf-8") as f:
+            new_content = f.read()
+        pattern = re.compile(r"Server\s*?=\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?$", flags=re.MULTILINE)
+        new_content = pattern.sub("Server = " + global_conf["PhotonHost"] + "\n", new_content)
+        print(f"Patch photon server redirector address: {cfg}")
+        with open(cfg, "w") as x:
+            x.write(new_content)
+
 
 config_pid_map = {}
 def launch_game(configPath, config, modded, flags):
