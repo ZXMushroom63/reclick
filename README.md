@@ -1,6 +1,15 @@
 # RECLICK
 All-in-one userfriendly GUI for GSE/GBE games, automatically managing Photon for you.
 
+- needs python 3.14 or newer
+- you need these packages:
+    - pywebview
+    - psutil
+    - requests
+
+- FRIDA SUPPORT
+    - `python -m pip install frida-tools` (used for CLR hooking)
+
 - Features so far:
     - really cool visual style
     - autodetects games and their features

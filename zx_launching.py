@@ -104,6 +104,8 @@ def patch_path(search_dir):
     
     if search_dir.parent.name.lower() == "deploy" and search_dir.name.lower() == "bin_win64": # and search_dir.joinpath("bin_Win32").exists()
         print("Patching photon server configs...")
+        if not search_dir.joinpath("hook.js").exists():
+            shutil.copy("./clr/hook.js", search_dir.joinpath("hook.js"))
         patternPub = re.compile(r"<setting.+?name=\"PublicIPAddress\".*?>.*?\n*?\s*?<value>\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?<\/value>", flags=re.MULTILINE)
         patternMst = re.compile(r"<setting.+?name=\"MasterIPAddress\".*?>.*?\n*?\s*?<value>\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?<\/value>", flags=re.MULTILINE)
         photonLoadbalancingConfs = list(search_dir.parent.rglob("Photon.LoadBalancing.dll.config"))
