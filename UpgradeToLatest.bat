@@ -7,7 +7,7 @@
     del "reclick.zip"
     robocopy "reclick-main" . /E /IS /IT /R:3 /W:5
     rd /s /q "reclick-main"
-    mkdir PLAYLIST
+    mkdir stuff
     echo Updated successfully!
     TIMEOUT 3
 )
