@@ -446,7 +446,7 @@
             redraw_games();
             await load_cfg();
             await window.pywebview.api.internal_update_library();
-            if (Object.keys(games).length < 1) {
+            if (true) {
                 await update_games_internal();
                 redraw_games();
             }
