@@ -79,7 +79,7 @@ def update_games_internal():
                 "Color": "none",
                 "Tags": make_tags({
                     "Positron": lambda _: cwd.joinpath("needs_photon_address.txt").exists(), #custom photon server patch
-                    "PhotonServerSettings": lambda _: len(list(cwd.joinpath("BepInEx").joinpath("plugins").rglob("uk.1a3.photonserversettings.cfg"))) > 0,
+                    "PhotonServerSettings": lambda _: len(list(cwd.joinpath("BepInEx").joinpath("config").rglob("uk.1a3.photonserversettings.cfg"))) > 0,
                     "PUN": lambda _: len(list(cwd.rglob("PhotonNetwork.dll"))) > 0,
                     "PUN2": lambda _: len(list(cwd.rglob("PhotonUnityNetworking.dll"))) > 0,
                     "EOS": lambda _: len(list(cwd.rglob("EOSSDK-Win64-Shipping.dll"))) > 0,

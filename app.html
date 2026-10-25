@@ -438,10 +438,11 @@
             await load_cfg(conf);
             return conf;
         }
-
+        let has_frida = false;
         addEventListener("load", init);
         async function init() {
             await waitForPywebview();
+            has_frida = await window.pywebview.api.has_frida();
             await update_games_internal();
             redraw_games();
             await load_cfg();
@@ -462,7 +463,7 @@
         document.querySelector("#repatch_btn").addEventListener("click", async () => {
         });
         const buttonMaps = new Map();
-        function get_launcher_button(cfgPath, text, extraLaunchArgs) {
+        function get_launcher_button(cfgPath, text, extraLaunchArgs, prefix) {
             if (!buttonMaps.has(cfgPath)) {
                 buttonMaps.set(cfgPath, []);
             }
@@ -486,7 +487,8 @@
                         cfgPath,
                         JSON.parse(games[cfgPath]),
                         true,
-                        extraLaunchArgs || []
+                        extraLaunchArgs || [],
+                        prefix || []
                     );
                     log_to_console("Game exited!");
                     buttonMaps.get(cfgPath).forEach(button => button.classList.remove("disabled"));
@@ -537,10 +539,24 @@
                 const gameInfo = document.createElement("small");
                 gameInfo.innerText = `${json.AppID !== 0 ? `AppID: ${json.AppID} | ` : ""}${json.Tags.join(", ") || "No Tags"}`;
                 gameDetails.appendChild(gameInfo);
-
-                if (json.Tags.includes("Positron")) {
+                const hasPhoton4 = games_internal.find(x => x.Tags.includes("PhotonServer4"));
+                const hasPhoton5 = games_internal.find(x => x.Tags.includes("PhotonServer5"));
+                if (json.Tags.includes("Positron") && hasPhoton4) {
                     launchWrapper.style.minWidth = "9rem";
                     launchWrapper.appendChild(get_launcher_button(games_internal.find(x => x.Tags.includes("PhotonServer4")).ConfigPath, "Host", ["/run", "LoadBalancing"]));
+                }
+                else if (json.Tags.includes("PhotonServerSettings") && hasPhoton5) {
+                    launchWrapper.style.minWidth = "9rem";
+                    if (has_frida) {
+                        launchWrapper.appendChild(get_launcher_button(games_internal.find(x => x.Tags.includes("PhotonServer5")).ConfigPath, "Host", ["-l", "hook.js", "--", "/run", "LoadBalancing"], ["frida", "-f"]));
+                    } else {
+                        const fridaBtn = document.createElement("button");
+                        fridaBtn.innerText = "Host ⚠";
+                        fridaBtn.addEventListener("click", ()=>{
+                            alert("You need to install frida-tools into python to self-host Photon v5");
+                        });
+                        launchWrapper.appendChild(fridaBtn);
+                    }
                 }
 
                 const launchBtn = get_launcher_button(cfgPath, intern ? "Test" : "Play");

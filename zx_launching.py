@@ -106,9 +106,10 @@ def patch_path(search_dir):
         print("Patching photon server configs...")
         patternPub = re.compile(r"<setting.+?name=\"PublicIPAddress\".*?>.*?\n*?\s*?<value>\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?<\/value>", flags=re.MULTILINE)
         patternMst = re.compile(r"<setting.+?name=\"MasterIPAddress\".*?>.*?\n*?\s*?<value>\s*?\d+?\.\d+?\.\d+?\.\d+?\s*?<\/value>", flags=re.MULTILINE)
-        patternSrv = re.compile(r'(<(?:UDP|TCP)Listener\b[^>]*?\bIPAddress=")\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}("[^>]*?\bOverrideApplication\s*=\s*"(?:Game|Master)"[^>]*>)', flags=re.DOTALL)
         photonLoadbalancingConfs = list(search_dir.parent.rglob("Photon.LoadBalancing.dll.config"))
         photonServerConfs = list(search_dir.parent.rglob("PhotonServer.config"))
+        gameServerConfs = list(search_dir.parent.rglob("GameServer.xml.config"))
+        nameServerConfs = list(search_dir.parent.rglob("Nameserver.json"))
         replacementPub = f"<setting name=\"PublicIPAddress\" serializeAs=\"String\">\n        <value>{global_conf["HostAddress"]}</value>"
         replacementMst = f"<setting name=\"MasterIPAddress\" serializeAs=\"String\">\n        <value>{global_conf["HostAddress"]}</value>"
         for cfg in photonLoadbalancingConfs:
@@ -132,6 +133,28 @@ def patch_path(search_dir):
             
             ET.indent(root, space="    ")
             tree.write(cfg, encoding="utf-8", xml_declaration=True)
+        for cfg in gameServerConfs:
+            print(f"Processing: {cfg}")
+            parser = ET.XMLParser(target=ET.TreeBuilder(insert_comments=True))
+            tree = ET.parse(cfg, parser=parser)
+            root = tree.getroot()
+            tags = root.findall(".//PublicIPAddress")
+            for tag in tags:
+                tag.text = global_conf["HostAddress"]
+            
+            ET.indent(root, space="    ")
+            tree.write(cfg, encoding="utf-8", xml_declaration=True)
+        for cfg in nameServerConfs:
+            json.dump({
+                "Nodes":[
+                    {
+                        "Region": "EU", 
+                        "IpAddress": global_conf["HostAddress"],
+                        "IpAddressIPv6": "::1",
+                        "Hostname": "localhost"
+                    }
+                ]
+            }, open(cfg, "w", encoding="utf-8"))
     
     photonSS = list(search_dir.rglob("uk.1a3.photonserversettings.cfg"))
     for cfg in photonSS:
@@ -146,7 +169,7 @@ def patch_path(search_dir):
 
 
 config_pid_map = {}
-def launch_game(configPath, config, modded, flags):
+def launch_game(configPath, config, modded, flags, prefix):
     global config_pid_map
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
@@ -165,7 +188,7 @@ def launch_game(configPath, config, modded, flags):
         env["BEPINEX_DISABLE"] = "1"
     if shutil.which("nvidia-offload"):
         command.insert(0, "nvidia-offload")
-    command = command + flags
+    command = prefix + command + flags
     old_portstart = 1024
     # subprocess.run(["sysctl", "-n", "net.ipv4.ip_unprivileged_port_start"], capture_output=True, text=True).stdout.strip()
     

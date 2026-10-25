@@ -31,8 +31,8 @@ class Interop:
         return zx_packaging.get_games()
     def internal_update_library(self):
         zx_packaging.update_games_internal()
-    def launch_async(self, configPath, config_obj, modded, flags):
-        zx_launching.launch_game(configPath, config_obj, modded, flags)
+    def launch_async(self, configPath, config_obj, modded, flags, prefix):
+        zx_launching.launch_game(configPath, config_obj, modded, flags, prefix)
     def close_async(self, config_obj):
         zx_launching.close_game(config_obj)
     def read_cfg(self):
@@ -74,6 +74,12 @@ class Interop:
             target_dir,
             1
         )
+    def has_frida(self):
+        try:
+            import frida
+            return True
+        except:
+            return False
         
 def on_closed():
     k = zx_launching.config_pid_map.keys()
