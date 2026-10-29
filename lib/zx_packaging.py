@@ -1,4 +1,4 @@
-# ---THISISAVALIDFILEALLISGOOD---
+from pathlib import Path
 import shutil
 import random
 import json
@@ -26,7 +26,7 @@ def make_tags(tags_dict):
     out.sort()
     return out
 
-readDir = pathlib.Path(".")
+readDir = Path(".")
 
 def update_games_internal():
     files = flatten(map(lambda x: readDir.rglob(x), ["steam_api.dll", "steam_api64.dll"]))
@@ -37,7 +37,7 @@ def update_games_internal():
         if "retconlib" in str(file):
             continue
         parts = file.parts
-        cwd = pathlib.Path(parts[0])
+        cwd = Path(parts[0])
         found_match = False
         for part in parts[1:]:
             if len(list(cwd.glob("*.exe"))) > 0:
@@ -104,7 +104,7 @@ def get_games():
         
         try:
             obj = json.loads(out[str(f)])
-            if not f.parent.joinpath(pathlib.Path(obj["GamePath"])).exists():
+            if not f.parent.joinpath(Path(obj["GamePath"])).exists():
                 f.unlink(True)
                 del out[str(f)]
         except:

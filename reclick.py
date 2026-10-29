@@ -9,7 +9,8 @@ import socket
 import threading
 from pathlib import Path
 import subprocess
-sys.path.append(Path(__file__).resolve().parent) #fix imports
+
+sys.path.append(Path(__file__).resolve().parent.joinpath("lib"))  # fix imports
 root = Path(__file__).resolve().parent
 
 try:
@@ -18,29 +19,51 @@ try:
     import psutil
 except Exception as e:
     print(e)
-    subprocess.run(["python", "-m", "pip", "install", "--trusted-host", "pypi.org", "--trusted-host", "files.pythonhosted.org", "pywebview", "requests", "psutil" ])
-    exit(1)
+    subprocess.run(
+        [
+            "python",
+            "-m",
+            "pip",
+            "install",
+            "--trusted-host",
+            "pypi.org",
+            "--trusted-host",
+            "files.pythonhosted.org",
+            "pywebview",
+            "requests",
+            "psutil",
+        ]
+    )
+    sys.exit(1)
 
-import zx_packaging
-import zx_launching
+import lib.zx_packaging as zx_packaging
+import lib.zx_launching as zx_launching
 
-BASE = "https://zxmushroom63.github.io/reclick" #selfhosting is easy btw. or just blank this to force offline
+BASE = "https://zxmushroom63.github.io/reclick"  # selfhosting is easy btw. or just blank this to force offline
+
 
 class Interop:
     def get_library(self):
         return zx_packaging.get_games()
+
     def internal_update_library(self):
         zx_packaging.update_games_internal()
+
     def launch_async(self, configPath, config_obj, modded, flags, prefix):
         zx_launching.launch_game(configPath, config_obj, modded, flags, prefix)
+
     def close_async(self, config_obj):
         zx_launching.close_game(config_obj)
+
     def read_cfg(self):
         return zx_packaging.read_cfg()
+
     def write_cfg(self, obj):
         zx_packaging.write_conf(obj)
+
     def generate_steam_id(self):
         return zx_packaging.mk_steam_uuid()
+
     def get_nics(self):
         out = {}
         interfaces = psutil.net_if_addrs()
@@ -50,6 +73,7 @@ class Interop:
                 if addr.family == socket.AF_INET:
                     out[interface_name].append(addr.address)
         return out
+
     def lanpatch(self, broadcastAddr):
         penguin = not sys.platform.startswith("win")
         if len(broadcastAddr) == 0 or penguin:
@@ -58,7 +82,7 @@ class Interop:
         import ctypes
         import os
 
-        target_dir = str(root) if 'root' in locals() and root else os.getcwd()
+        target_dir = str(root) if "root" in locals() and root else os.getcwd()
         bat_relative_path = ".\\retconlib\\vlanpatch.bat"
 
         parameters = f'/c cd /d "{target_dir}" && "{bat_relative_path}" {broadcastAddr}'
@@ -67,28 +91,27 @@ class Interop:
         print(f"DEBUG: Parameters: {parameters}")
 
         ctypes.windll.shell32.ShellExecuteW(
-            None,
-            "runas",
-            "cmd.exe",
-            parameters,
-            target_dir,
-            1
+            None, "runas", "cmd.exe", parameters, target_dir, 1
         )
+
     def has_frida(self):
         try:
             import frida
+
             return True
         except:
             return False
-        
+
+
 def on_closed():
     k = zx_launching.config_pid_map.keys()
     for key in k:
         zx_launching.config_pid_map[key] = False
     time.sleep(1.0)
-    print("Goodbye")    
+    print("Goodbye")
 
-window = webview.create_window('reclick', 'app.html', js_api=Interop(), frameless=False)
+
+window = webview.create_window("reclick", "app.html", js_api=Interop(), frameless=False)
 window.events.closed += on_closed
 
 webview.start(debug=False if len(sys.argv) > 0 else True)

@@ -1,14 +1,15 @@
-# ---THISISAVALIDFILEALLISGOOD---
 import json
-import pathlib
+from pathlib import Path
 import time
 import os
 import subprocess
 import sys
 import shutil
-import zx_packaging
+import lib.zx_packaging as zx_packaging
 import psutil
 import re
+from lib.patches.patches import PATCHES
+print(PATCHES)
 
 import xml.etree.ElementTree as ET
 
@@ -175,7 +176,7 @@ def launch_game(configPath, config, modded, flags, prefix):
     global config_pid_map
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
-    gamePath = pathlib.Path(configPath).parent.joinpath(pathlib.Path(config["GamePath"]))
+    gamePath = Path(configPath).parent.joinpath(Path(config["GamePath"]))
     command = [str(gamePath.absolute())]
     #dedupe(config["GamePath"])
     fileName = gamePath.name
