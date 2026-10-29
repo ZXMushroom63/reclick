@@ -181,6 +181,7 @@ def launch_game(configPath, config, modded, flags, prefix):
     fileName = gamePath.name
     if penguin:
         command.insert(0, "wine")
+        env["VK_DRIVER_FILES"] = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json"
     env["WINEDEBUG"] = "-all"
     if modded:
         env["WINEDLLOVERRIDES"] = "winhttp=n,b;version=n,b;dinput8=n,b"

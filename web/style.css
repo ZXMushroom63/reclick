@@ -1,0 +1,286 @@
+* {
+    background-color: rgb(6, 4, 6);
+    color: white;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    padding: 4px;
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0);
+    transition: background-color 0.1s;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgb(75, 75, 75);
+}
+
+button:active {
+    background-color: rgb(52, 52, 52);
+}
+
+.glowy {
+    text-shadow: 0px 0px 30px;
+}
+
+.crt {
+    filter: saturate(25) brightness(0.5) contrast(1.8) brightness(7);
+}
+
+.crt::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(16, 18, 18, 0.1);
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.crt::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    /* background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+                    rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg,
+                    rgba(255, 0, 0, 0.02),
+                    rgba(0, 255, 255, 0.07),
+                    rgba(0, 0, 255, 0.02)); */
+    background:
+        linear-gradient(rgba(18, 18, 16, 0) 50%,
+            rgba(0, 4, 4, 0.2) 50%),
+        linear-gradient(90deg,
+            rgba(255, 255, 0, 0.02),
+            rgba(255, 0, 255, 0.02),
+            rgba(0, 255, 255, 0.02));
+    z-index: 2;
+    background-size:
+        100% 5px,
+        5px 100%;
+    pointer-events: none;
+}
+
+html {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    padding: 0rem;
+}
+
+#top_bar {
+    height: 3rem;
+}
+
+#top_bar {
+    width: 100vw;
+    border-bottom: 1px solid white;
+}
+
+#devlogs {
+    position: fixed;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background: transparent;
+    pointer-events: none;
+    user-select: none;
+    color: white;
+    font-family: monospace;
+    opacity: 20%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#title {
+    height: 3rem;
+    line-height: 3rem;
+    font-size: 2.5rem;
+    margin-left: 0.4rem;
+    display: inline-block;
+    text-align: left;
+    justify-content: center;
+    justify-self: center;
+    margin-right: auto;
+}
+
+#repatch_section {
+    width: calc(100vw - 1rem);
+    border-bottom: 1px solid white;
+    padding: 0.5rem;
+    height: 1.5rem;
+}
+
+#bottom_container {
+    height: calc(100vh - 5.5rem - 2px);
+    width: 100vw;
+}
+
+#sectioner {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse;
+}
+
+tr {
+    border-collapse: collapse;
+}
+
+#leftOuter {
+    border-right: 1px solid white;
+    width: 50%;
+    align-content: start;
+    padding: 0;
+    margin: 0;
+}
+
+#left {
+    height: calc(100vh - 5.5rem - 2px - 2rem);
+    width: calc(100% - 2rem);
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: 0;
+    padding: 1rem;
+}
+
+::-webkit-scrollbar {
+    visibility: hidden;
+    display: none;
+}
+
+.game {
+    border: 1px solid white;
+    border-radius: 6px;
+    padding: 8px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.game:last-child {
+    margin-bottom: 0rem;
+}
+
+.internal,
+.internal * {
+    border-color: rgb(177, 180, 200);
+    color: slateblue;
+    opacity: 90%;
+}
+
+.game h3,
+.game small {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: calc(50vw - 8rem);
+    text-overflow: ellipsis;
+}
+
+.game.selected h3 {
+    text-decoration: underline;
+}
+
+#right {
+    align-items: start;
+    vertical-align: top;
+    align-content: start;
+    text-align: center;
+}
+
+:focus {
+    outline: none;
+    /* text-decoration: underline; */
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    background-color: rgb(55, 55, 55);
+}
+
+input,
+select {
+    display: inline-block;
+    font-family: monospace;
+    border: 1px solid rgb(200, 200, 200);
+    padding: 4px;
+    width: 20vw;
+    border-radius: 0.5rem;
+    outline: transparent;
+    text-align: center;
+    text-caret-shape: underline;
+    text-caret-animation: manual;
+}
+
+select {
+    cursor: pointer;
+}
+
+::selection {
+    background-color: rgb(255, 255, 255);
+    border: 1px solid white;
+    color: black;
+    text-decoration: none;
+}
+
+#escape {
+    display: none;
+}
+
+@media only screen and (max-width: 700px) {
+    #right {
+        display: none;
+    }
+
+    body.changingsettings #leftOuter {
+        display: none;
+    }
+
+    body.changingsettings #right {
+        display: table-cell;
+        width: 100%;
+    }
+
+    body.changingsettings #escape {
+        display: inline;
+    }
+
+    .game h3,
+    .game small {
+        max-width: calc(100vw - 8rem);
+    }
+}
+
+.launch_btn {
+    display: inline-block;
+    font-size: 1.25rem;
+    height: calc(100% - 1rem);
+    margin-left: 0.5rem;
+    width: 4rem;
+}
+
+button.disabled {
+    opacity: 55%;
+}
