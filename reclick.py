@@ -50,7 +50,7 @@ class Interop:
         zx_packaging.update_games_internal()
 
     def launch_async(self, configPath, config_obj, modded, flags, prefix):
-        zx_launching.launch_game(configPath, config_obj, modded, flags, prefix)
+        zx_launching.launch_game(configPath, config_obj, modded, flags, prefix, root)
 
     def close_async(self, config_obj):
         zx_launching.close_game(config_obj)
