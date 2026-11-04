@@ -1,4 +1,5 @@
 from lib.patches.base_patch import BasePatch
+import re
 
 #literally only used by REPO
 class PhotonServerSettingsPatch(BasePatch):
