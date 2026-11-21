@@ -194,7 +194,7 @@ tr {
     display: block;
     white-space: nowrap;
     overflow: hidden;
-    max-width: calc(50vw - 8rem);
+    max-width: calc(50vw - 12rem);
     text-overflow: ellipsis;
 }
 
@@ -269,7 +269,7 @@ select {
 
     .game h3,
     .game small {
-        max-width: calc(100vw - 8rem);
+        max-width: calc(100vw - 12rem);
     }
 }
 

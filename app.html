@@ -351,10 +351,11 @@
                             );
                         } else {
                             const fridaBtn = document.createElement("button");
-                            fridaBtn.innerText = "Host ⚠";
+                            fridaBtn.innerText = "Error!";
+                            fridaBtn.classList.add("launch_btn");
                             fridaBtn.addEventListener("click", () => {
                                 alert(
-                                    "You need to install frida-tools into python to self-host Photon v5",
+                                    "You need to install frida-tools into python to self-host Photon v5!\nNote: you can still play and join servers just fine",
                                 );
                             });
                             launchWrapper.appendChild(fridaBtn);
