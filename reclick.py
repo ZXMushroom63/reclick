@@ -19,9 +19,12 @@ try:
     import psutil
 except Exception as e:
     print(e)
+    cmd = "python"
+    if shutil.which(cmd) == None:
+        cmd = "python3"
     subprocess.run(
         [
-            "python",
+            cmd,
             "-m",
             "pip",
             "install",
