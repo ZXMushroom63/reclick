@@ -71,6 +71,7 @@ def read_cfg():
     try:
         with open(readDir.joinpath("reclick.root.json")) as f:
             out.update(json.loads(f.read()))
+            out = fixup_conf(out)
     except:
         print("Encountered corrupt config, regenerating...")
         out = fixup_conf({})
@@ -123,5 +124,14 @@ Setting(
     "bool",
     lambda _: True,
     lambda _: True,
+    lambda x: x
+)
+
+Setting(
+    "RetconHue",
+    "Menu Color",
+    "int",
+    lambda x: x >= 0 and x <= 360,
+    lambda _: 0,
     lambda x: x
 )

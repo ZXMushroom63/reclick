@@ -3,7 +3,7 @@ import pkgutil
 import sys
 import os
 from pathlib import Path
-import lib.zx_packaging as zx_packaging
+import lib.settings.zx_settings as zx_settings
 
 PATCHES = [ ]
 
@@ -14,6 +14,6 @@ for patch in patchfiles:
     PATCHES.append(getattr(module, builtname)())
     
 def patch_path(search_dir):
-    global_conf = zx_packaging.read_cfg()
+    global_conf = zx_settings.read_cfg()
     for patch in PATCHES:
         patch.patch(search_dir, global_conf)

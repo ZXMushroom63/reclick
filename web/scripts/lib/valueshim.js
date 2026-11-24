@@ -3,10 +3,13 @@ HTMLElement.prototype.get_value = function () {
         return this.value;
     }
     if (this instanceof HTMLInputElement) {
-        if (this.getAttribute("type") === "checkbox") {
+        const type = this.getAttribute("type");
+        if (type === "checkbox") {
             return this.checked;
+        } else if (type === "number") {
+            return this.valueAsNumber;
         } else {
-            return "" + this.value;
+            return ""+this.value;
         }
     }
     if (this instanceof HTMLSelectElement) {

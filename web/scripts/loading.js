@@ -1,6 +1,7 @@
 async function load_cfg(inCf) {
     const conf = inCf || (await window.pywebview.api.read_cfg());
     await update_nic_list();
+    document.documentElement.style.setProperty("--hueOffset", conf["RetconHue"] + "deg");
     Object.entries(conf).forEach((ent) => {
         const settingTarget = document.querySelector(
             `[data-setting="${ent[0]}"]`,

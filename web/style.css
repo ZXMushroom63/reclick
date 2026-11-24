@@ -28,7 +28,7 @@ button:active {
 }
 
 .crt {
-    filter: saturate(25) brightness(0.5) contrast(1.8) brightness(7);
+    filter: saturate(25) brightness(0.5) contrast(1.8) hue-rotate(var(--hueOffset)) brightness(7);
 }
 
 .crt::after {

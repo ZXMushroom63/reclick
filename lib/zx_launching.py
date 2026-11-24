@@ -4,14 +4,14 @@ import os
 import subprocess
 import sys
 import shutil
-import lib.zx_packaging as zx_packaging
+import lib.settings.zx_settings as zx_settings
 from lib.patches.patches import patch_path
 
 config_pid_map = {}
 
 def launch_game(configPath, config, modded, flags, prefix, root):
     global config_pid_map
-    global_conf = zx_packaging.read_cfg()
+    global_conf = zx_settings.read_cfg()
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
     gamePath = Path(configPath).parent.joinpath(Path(config["GamePath"]))
