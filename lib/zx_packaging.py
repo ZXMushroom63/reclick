@@ -55,11 +55,10 @@ def update_games_internal():
                     pass
         with open(cwd.joinpath("reclick.json"), "w") as f:
             print(f"Rewrote config for: {game}")
-            f.write(json.dumps({
+            f.write(json.dumps(fixup_gameconf({
                 "Name": game.name.replace(".exe", ""),
                 "GamePath": str(game.relative_to(cwd)),
                 "AppID": appid,
-                "Settings": create_default_gameconf(game),
                 "Tags": make_tags({
                     "Positron": lambda _: cwd.joinpath("needs_photon_address.txt").exists(), #custom photon server patch
                     "PhotonServerSettings": lambda _: len(list(cwd.joinpath("BepInEx").joinpath("config").rglob("uk.1a3.photonserversettings.cfg"))) > 0,
@@ -73,29 +72,33 @@ def update_games_internal():
                     "PhotonServer4": lambda _: cwd.joinpath("PhotonLicensing.dll").exists(),
                     "PhotonServer5": lambda _: (not cwd.joinpath("PhotonLicensing.dll").exists()) and cwd.joinpath("PhotonHostRuntime.dll").exists(),
                 })
-            }, indent=2))
+            }, game), indent=2))
 # add a UI hint that more games have been added if autodetect finishes after this is called
 
 def get_games():
     files = list(readDir.rglob("reclick.json"))
-    out = {}
+    
     gamePathMap = {}
     for f in files:
         handle = open(f, "r")
-        out[str(f)] = handle.read()
         handle.close()
         
         try:
-            obj = json.loads(out[str(f)])
+            obj = json.load(open(f, "r"))
             gamePathMap[str(f)] = Path(obj["GamePath"])
             if not f.parent.joinpath(Path(obj["GamePath"])).exists():
                 f.unlink(True)
-                del out[str(f)]
-        except:
+                print(f"Failed to find executable {f}")
+        except Exception as e:
+            print(f"Failed to process {f}: {e}")
             f.unlink(True)
-            del out[str(f)]
     
-    for f in out:
+    out = {}
+    for f in files:
+        if not f.exists():
+            continue
         obj = json.load(open(f, "r"))
-        json.dump(fixup_gameconf(obj, gamePathMap[str(f)]), open(f, "w"))
+        obj = fixup_gameconf(obj, gamePathMap[str(f)])
+        out[str(f)] = obj
+        json.dump(obj, open(f, "w"), indent=2)
     return out

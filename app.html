@@ -123,14 +123,17 @@
 
         <div id="devlogs">RECLICK v4</div>
 
+        <script src="web/scripts/lib/colorops.js"></script>
         <script src="web/scripts/lib/valueshim.js"></script>
         <script src="web/scripts/lib/logging.js"></script>
         <script src="web/scripts/update_nic_list.js"></script>
         <script src="web/scripts/loading.js"></script>
+        <script src="web/scripts/loading_game.js"></script>
 
         <script>
             let games = (globalThis.games = {});
             let games_internal = (globalThis.games_internal = []);
+            let lastLoadedConf = null;
 
             const waitForPywebview = async () => {
                 return new Promise((resolve) => {
@@ -154,7 +157,6 @@
                 await waitForPywebview();
                 has_frida = await window.pywebview.api.has_frida();
                 await update_games_internal();
-                redraw_games();
                 await load_cfg();
                 await window.pywebview.api.internal_update_library();
                 if (true) {
@@ -165,7 +167,7 @@
             async function update_games_internal() {
                 games = await window.pywebview.api.get_library();
                 games_internal = Object.entries(games).map((ent) =>
-                    Object.assign({ ConfigPath: ent[0] }, JSON.parse(ent[1])),
+                    Object.assign({ ConfigPath: ent[0] }, ent[1]),
                 );
             }
             document
@@ -187,7 +189,7 @@
                 launchBtn.addEventListener("click", async () => {
                     if (launchBtn.classList.contains("disabled")) {
                         await window.pywebview.api.close_async(
-                            JSON.parse(games[cfgPath]),
+                            games[cfgPath],
                         );
                         launchBtn.blur();
                         return;
@@ -195,19 +197,13 @@
                     launchBtn.blur();
                     try {
                         log_to_console(`Launching cfg: ${cfgPath}`);
-                        log_to_console(games[cfgPath]);
+                        log_to_console(games[cfgPath].GamePath);
                         buttonMaps
                             .get(cfgPath)
                             .forEach((button) =>
                                 button.classList.add("disabled"),
                             );
-                        await window.pywebview.api.launch_async(
-                            cfgPath,
-                            JSON.parse(games[cfgPath]),
-                            true,
-                            extraLaunchArgs || [],
-                            prefix || [],
-                        );
+                        await window.pywebview.api.launch_async(cfgPath);
                         log_to_console("Game exited!");
                         buttonMaps
                             .get(cfgPath)
@@ -233,9 +229,13 @@
                 );
             const game_entry_map = new Map();
             function draw_game(gameEntry, left) {
+                const hue = lastLoadedConf.RetconHue;
                 const cfgPath = gameEntry[0];
+                const transformedColor = lastLoadedConf.NoShaders ? games[cfgPath].Settings.Color : transformColor(games[cfgPath].Settings.Color, 360-hue);
                 if (game_entry_map.has(cfgPath)) {
                     const elem = game_entry_map.get(cfgPath);
+                    elem.querySelector("h3").innerText = games[cfgPath].Settings.DisplayName;
+                    elem.style.setProperty("--col", transformedColor);
                     if (cfgPath === selectedGame) {
                         elem.classList.add("selected");
                     }
@@ -245,6 +245,7 @@
                 try {
                     const json = gameEntry[1];
                     const gameContainer = document.createElement("div");
+                    gameContainer.style.setProperty("--col", transformedColor);
                     if (cfgPath === selectedGame) {
                         gameContainer.classList.add("selected");
                     }
@@ -272,13 +273,7 @@
                     gameContent.appendChild(launchWrapper);
 
                     const gameTitle = document.createElement("h3");
-                    const parts = json.GamePath.split("/")
-                        .map((x) => x.split("\\"))
-                        .flat();
-                    gameTitle.innerText = parts[parts.length - 1].replace(
-                        ".exe",
-                        "",
-                    );
+                    gameTitle.innerText = games[cfgPath].Settings.DisplayName;
                     gameDetails.appendChild(gameTitle);
                     const gameInfo = document.createElement("small");
                     gameInfo.innerText = `${json.AppID !== 0 ? `AppID: ${json.AppID} | ` : ""}${json.Tags.join(", ") || "No Tags"}`;
@@ -346,30 +341,62 @@
                     console.error(error);
                 }
             }
+
+            let queueingRead = false;
             function reload_gamesettings() {
                 if (!selectedGame) {
                     return;
                 }
                 document.querySelector("#game_heading").innerText =
-                    JSON.parse(games[selectedGame])
-                        .GamePath.split("/")
+                    games[selectedGame].GamePath.split("/")
                         .map((x) => x.split("\\"))
                         .flat()
                         .toReversed()[0]
                         .replaceAll(".exe", "")
                         .toLowerCase() + " settings";
-                
+                queueingRead = true;
+                async function savechanges() {
+                    await window.pywebview.api.write_gameconf(selectedGame, games[selectedGame]);
+                    redraw_games();
+                }
+                window.pywebview.api.read_gameconf(selectedGame).then((obj) => {
+                    games[selectedGame] = obj;
+                    Object.entries(obj["Settings"]).forEach((ent) => {
+                        const settingTarget = document.querySelector(
+                            `[data-gamesetting="${ent[0]}"]`,
+                        );
+                        if (settingTarget) {
+                            settingTarget.set_value(ent[1]);
+                            settingTarget.onblur = () => {
+                                obj["Settings"][ent[0]] = settingTarget.get_value();
+                                savechanges();
+                            };
+                            settingTarget.onkeydown = (e) => {
+                                if (e.key === "Enter") {
+                                    settingTarget.blur();
+                                }
+                            };
+                            settingTarget.oninput = (e) => {
+                                if (settingTarget.type === "checkbox") {
+                                    settingTarget.blur();
+                                }
+                            };
+                        }
+                    });
+                });
             }
             function redraw_games() {
                 const left = document.querySelector("#left");
                 const oldScroll = left.scrollTop;
-                [...document.querySelectorAll(".game.selected")].forEach(x => x.classList.remove("selected"));
+                [...document.querySelectorAll(".game.selected")].forEach((x) =>
+                    x.classList.remove("selected"),
+                );
                 [...document.querySelectorAll(".game")].forEach((x) =>
                     x.remove(),
                 );
 
                 Object.entries(games)
-                    .map((ent) => [ent[0], JSON.parse(ent[1])])
+                    .map((ent) => [ent[0], ent[1]])
                     .sort(
                         (a, b) =>
                             is_internal(a[1].Tags) - is_internal(b[1].Tags),
@@ -382,11 +409,6 @@
                 left.scrollTop = oldScroll;
                 log_to_console("Redrew games panel");
             }
-            addEventListener("keydown", (e) => {
-                if (e.key === "p") {
-                    redraw_games();
-                }
-            });
             function sleep(ms) {
                 return new Promise((res, rej) => {
                     setTimeout(() => {

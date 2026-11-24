@@ -22,13 +22,15 @@ async function load_cfg(inCf) {
                     settingTarget.blur();
                 }
             };
-            settingTarget.onmouseup = (e) => {
+            settingTarget.oninput = (e) => {
                 if (settingTarget.type === "checkbox") {
                     settingTarget.blur();
                 }
             };
         }
     });
+    lastLoadedConf = conf;
+    redraw_games();
     return conf;
 }
 async function reload_cfg(inCf) {

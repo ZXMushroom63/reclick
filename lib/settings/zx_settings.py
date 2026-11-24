@@ -71,13 +71,23 @@ def fixup_gameconf(__obj, gamefile):
     _obj["Settings"] = internal_fixup_conf(_obj["Settings"], GAMESETTING_DEFINITIONS, gamefile)
     return _obj
 
-def write_gameconf(obj):
+def write_gameconf(configPath, obj):
     if obj is None:
         return
-    fixed_ver = fixup_conf(obj)
-    with open(readDir.joinpath("reclick.root.json"), "w") as f:
+    fixed_ver = fixup_gameconf(obj, Path(obj["GamePath"]))
+    with open(configPath, "w") as f:
         f.write(json.dumps(fixed_ver, indent=2))
     return fixed_ver
+
+def read_gameconf(configPath):
+    out = {}
+    try:
+        with open(configPath) as f:
+            out.update(json.loads(f.read()))
+            out = fixup_gameconf(out, Path(out["GamePath"]))
+    except:
+        return None
+    return out
 
 def create_default_gameconf(gamefile):
     return fixup_gameconf({}, gamefile)["Settings"]
@@ -233,6 +243,6 @@ Setting(
     GAMESETTING_DEFINITIONS,
     "bool",
     lambda x: True,
-    lambda gamefile: True,
+    lambda gamefile: False,
     lambda x: x
 )

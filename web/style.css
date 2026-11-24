@@ -201,11 +201,17 @@ tr {
 }
 
 .game {
-    border: 1px solid white;
+    --col: white;
+    border: 1px solid var(--col);
     border-radius: 6px;
     padding: 8px;
     cursor: pointer;
     margin-bottom: 1rem;
+}
+
+.game * {
+    border-color: var(--col);
+    color: var(--col);
 }
 
 .game:last-child {
@@ -218,7 +224,6 @@ tr {
     color: slateblue;
     opacity: 90%;
 }
-
 .game h3,
 .game small {
     display: block;

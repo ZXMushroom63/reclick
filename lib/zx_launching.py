@@ -9,9 +9,11 @@ from lib.patches.patches import patch_path
 
 config_pid_map = {}
 
-def launch_game(configPath, config, modded, flags, prefix, root):
+def launch_game(configPath, root):
     global config_pid_map
     global_conf = zx_settings.read_cfg()
+    config = zx_settings.read_gameconf(configPath)
+    flags = config["Settings"]["Arguments"].split(" ")
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
     gamePath = Path(configPath).parent.joinpath(Path(config["GamePath"]))
@@ -31,17 +33,17 @@ def launch_game(configPath, config, modded, flags, prefix, root):
     env["EOSR_TRACE"] = "lifecycle"
     env["EOSR_DISPLAY_NAME"] = global_conf["Username"]
     
-    if modded:
-        env["WINEDLLOVERRIDES"] = "winhttp=n,b;version=n,b;dinput8=n,b"
-        env["DOORSTOP_DISABLE"] = "0"
-    else:
+    if config["Settings"]["EnableMods"]:
         env["WINEDLLOVERRIDES"] = "dinput8=n,b"
         env["DOORSTOP_DISABLE"] = "1"
+    else:
+        env["WINEDLLOVERRIDES"] = "winhttp=n,b;version=n,b;dinput8=n,b"
+        env["DOORSTOP_DISABLE"] = "0"
     
     if shutil.which("nvidia-offload"):
         command.insert(0, "nvidia-offload")
 
-    command = prefix + command + flags
+    command = command + flags
     
     if "PhotonServer4" in config["Tags"] or "PhotonServer5" in config["Tags"]:
         if penguin:
