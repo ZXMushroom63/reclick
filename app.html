@@ -46,6 +46,7 @@
                         </div>
                     </td>
                     <td id="right">
+                        <u>global settings</u><br>
                         username: <input data-setting="Username" /><br />
                         steam id: <input data-setting="SteamID" />
                         <button id="randomise_steam_id">⚂</button><br />
@@ -54,8 +55,7 @@
                         replace steam GSE DLLs:
                         <input type=checkbox data-setting="ReplaceSteamAPI" /><br />
                         <br />
-                        <small>pretend there are other game settings here</small
-                        ><br />
+                        <u>game settings</u><br>
                         <button id="escape">escape the settings menu</button>
                     </td>
                 </tr>
@@ -64,40 +64,15 @@
 
         <div id="devlogs">RECLICK v4</div>
 
-        <!-- ---THISISAVALIDFILEALLISGOOD--- -->
+        <script src="web/scripts/lib/valueshim.js"></script>
+        <script src="web/scripts/lib/logging.js"></script>
+        <script src="web/scripts/update_nic_list.js"></script>
+        <script src="web/scripts/loading.js"></script>
+
         <script>
-            HTMLElement.prototype.get_value = function () {
-                if (this instanceof HTMLTextAreaElement) {
-                    return this.value;
-                }
-                if (this instanceof HTMLInputElement) {
-                    if (this.getAttribute("type") === "checkbox") {
-                        return this.checked;
-                    } else {
-                        return "" + this.value;
-                    }
-                }
-                if (this instanceof HTMLSelectElement) {
-                    return this.value;
-                }
-                return "";
-            }
-
-            HTMLElement.prototype.set_value = function (x) {
-                if (this instanceof HTMLTextAreaElement) {
-                    this.value = x;
-                }
-                if (this instanceof HTMLInputElement) {
-                    if (this.getAttribute("type") === "checkbox") {
-                        this.checked = x;
-                    } else {
-                        this.value = x;
-                    }
-                }
-            }
-
-            let games = {};
-            let games_internal = [];
+            let games = globalThis.games = {};
+            let games_internal = globalThis.games_internal = [];
+            
             const waitForPywebview = async () => {
                 return new Promise((resolve) => {
                     const interval = setInterval(() => {
@@ -112,99 +87,7 @@
                     }, 50);
                 });
             };
-            const logs_buffer = ["RECLICK v4"];
-            const logs = document.querySelector("#devlogs");
-            function log_to_console(x) {
-                logs_buffer.push(x);
-                if (logs_buffer.length > 40) {
-                    logs_buffer.splice(0, 1);
-                }
-                logs.innerText = "";
-                draw_bg();
-                console.log(x);
-            }
-            async function draw_bg() {
-                logs.innerText = "";
-                for (let i = 0; i < logs_buffer.length; i++) {
-                    await sleep(100);
-                    logs.innerText += logs_buffer[i] + "\n";
-                }
-            }
-            const ignorelist = ["vmware", "virtual", "vm", "vir"];
-            const nameMapping = {
-                ham: "Hamachi",
-                wlp: "WiFi",
-                wlan: "WiFi",
-                eth: "Ethernet",
-                en: "Ethernet",
-                lo: "Local",
-            };
-            async function update_nic_list(inCf) {
-                const conf = inCf || (await window.pywebview.api.read_cfg());
-                const targetAddress = conf["HostAddress"];
-                const nics = await window.pywebview.api.get_nics();
-                const dropdown = document.querySelector(
-                    "[data-setting=HostAddress]",
-                );
-                dropdown.innerHTML = "";
-                Object.entries(nics).forEach((ent) => {
-                    let rawName = ent[0];
-                    let chkName = ent[0].toLowerCase();
-                    let displayName = ent[0];
-                    const addresses = ent[1];
-                    for (let i = 0; i < ignorelist.length; i++) {
-                        if (chkName.includes(ignorelist[i])) {
-                            return;
-                        }
-                    }
-                    Object.entries(nameMapping).forEach((mapper) => {
-                        if (chkName.startsWith(mapper[0])) {
-                            displayName = mapper[1];
-                        }
-                    });
-                    addresses.forEach((addr) => {
-                        const opt = document.createElement("option");
-                        opt.value = addr;
-                        opt.innerText = `${displayName}: ${addr}`;
-                        opt.selected = targetAddress === addr;
-                        dropdown.appendChild(opt);
-                    });
-                });
-            }
-            async function load_cfg(inCf) {
-                const conf = inCf || (await window.pywebview.api.read_cfg());
-                await update_nic_list();
-                Object.entries(conf).forEach((ent) => {
-                    const settingTarget = document.querySelector(
-                        `[data-setting="${ent[0]}"]`,
-                    );
-                    if (settingTarget) {
-                        settingTarget.set_value(ent[1]);
-                        settingTarget.onblur = () => {
-                            reload_cfg();
-                        };
-                        settingTarget.onkeydown = (e) => {
-                            if (e.key === "Enter") {
-                                settingTarget.blur();
-                            }
-                        };
-                    }
-                });
-                return conf;
-            }
-            async function reload_cfg(inCf) {
-                const conf = inCf || (await window.pywebview.api.read_cfg());
-                [...document.querySelectorAll(`[data-setting]`)].forEach(
-                    (setting) => {
-                        conf[setting.getAttribute("data-setting")] =
-                            setting.get_value();
-                    },
-                );
-                console.log(conf);
-                const newCf = await window.pywebview.api.write_cfg(conf);
-                await load_cfg(newCf);
-                return conf;
-            }
+            
             let has_frida = false;
             let selectedGame = null;
             addEventListener("load", init);
