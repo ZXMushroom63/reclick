@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>retcon4</title>
-        <link rel="stylesheet" href="web/style.css">
+        <link rel="stylesheet" href="web/style.css" />
     </head>
 
     <body class="crt">
@@ -32,7 +32,8 @@
                                         <td style="width: 100%">
                                             <h3>Loading...</h3>
                                             <small
-                                                >If this takes more than a second smth broke</small
+                                                >If this takes more than a
+                                                second smth broke</small
                                             >
                                         </td>
                                         <td>
@@ -46,27 +47,60 @@
                         </div>
                     </td>
                     <td id="right">
-                        <u>global settings</u><br>
-                        username: <input data-setting="Username" /><br />
-                        steam id: <input data-setting="SteamID" />
-                        <button id="randomise_steam_id">⚂</button><br />
-                        custom photon server:
-                        <input data-setting="PhotonHost" /><br />
-                        replace steam GSE DLLs:
-                        <input type=checkbox data-setting="ReplaceSteamAPI" /><br />
-                        gui color:
-                        <input type=number min=0 max=360 data-setting="RetconHue" /><br />
-                        disable shaders: 
-                        <input type=checkbox data-setting="NoShaders" /><br />
-                        <br />
-                        <u>game settings</u><br>
-                        menu name: <input data-gamesetting="DisplayName" /><br />
-                        menu color: <input type=color data-gamesetting="Color" value="#FFFFFF" /><br />
-                        enable bepinex: <input type=checkbox data-gamesetting="EnableMods" /><br />
-                        enable steam overlay: <input type=checkbox data-gamesetting="GbeOverlay" /><br />
-                        launch params: <input data-gamesetting="Arguments" /><br />
-                        no hw accel: <input type=checkbox data-gamesetting="NoHwAccel" /><br />
-                        <button id="escape">back</button>
+                        <div id="settingsWrapper">
+                            <u>global settings</u><br />
+                            username: <input data-setting="Username" /><br />
+                            steam id: <input data-setting="SteamID" />
+                            <button id="randomise_steam_id">⚂</button><br />
+                            custom photon server:
+                            <input data-setting="PhotonHost" /><br />
+                            replace steam GSE DLLs:
+                            <input
+                                type="checkbox"
+                                data-setting="ReplaceSteamAPI"
+                            /><br />
+                            gui color:
+                            <input
+                                type="number"
+                                min="0"
+                                max="360"
+                                data-setting="RetconHue"
+                            /><br />
+                            disable shaders:
+                            <input
+                                type="checkbox"
+                                data-setting="NoShaders"
+                            /><br />
+                            <div id="settings_divider"></div>
+                            <br />
+                            <u>game settings</u><br />
+                            menu name:
+                            <input data-gamesetting="DisplayName" /><br />
+                            menu color:
+                            <input
+                                type="color"
+                                data-gamesetting="Color"
+                                value="#FFFFFF"
+                            /><br />
+                            enable bepinex:
+                            <input
+                                type="checkbox"
+                                data-gamesetting="EnableMods"
+                            /><br />
+                            enable steam overlay:
+                            <input
+                                type="checkbox"
+                                data-gamesetting="GbeOverlay"
+                            /><br />
+                            launch params:
+                            <input data-gamesetting="Arguments" /><br />
+                            no hw accel:
+                            <input
+                                type="checkbox"
+                                data-gamesetting="NoHwAccel"
+                            /><br />
+                            <button id="escape">back</button>
+                        </div>
                     </td>
                 </tr>
             </table>
@@ -80,9 +114,9 @@
         <script src="web/scripts/loading.js"></script>
 
         <script>
-            let games = globalThis.games = {};
-            let games_internal = globalThis.games_internal = [];
-            
+            let games = (globalThis.games = {});
+            let games_internal = (globalThis.games_internal = []);
+
             const waitForPywebview = async () => {
                 return new Promise((resolve) => {
                     const interval = setInterval(() => {
@@ -97,7 +131,7 @@
                     }, 50);
                 });
             };
-            
+
             let has_frida = false;
             let selectedGame = null;
             addEventListener("load", init);

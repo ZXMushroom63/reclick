@@ -179,6 +179,22 @@ tr {
     padding: 1rem;
 }
 
+#settingsWrapper {
+    height: calc(100vh - 5.5rem - 2px - 1rem);
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    margin: 0;
+    padding: 0;
+    padding-top: 1rem;
+}
+
+#settingsWrapper u {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: inline-block;
+}
+
 ::-webkit-scrollbar {
     visibility: hidden;
     display: none;
@@ -215,6 +231,12 @@ tr {
 .game.selected h3 {
     text-decoration: underline;
 }
+.game.selected * {
+    background: transparent;
+}
+.game.selected {
+    background: linear-gradient(0deg,rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.00) 100%);
+}
 
 #right {
     align-items: start;
@@ -249,14 +271,17 @@ select {
 }
 
 input[type=color] {
-    width: 3rem;
-    height: 3rem;
+    width: 1.8rem;
+    height: 2rem;
+    transform: scale(2) translateY(-0.25rem);
     border: 0;
     filter: hue-rotate(calc(360deg - var(--hueOffset))) saturate(0.06);
     margin-left: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
+    margin-top: 0.25rem;
     position: relative;
     bottom: -0.5rem;
+    background: transparent;
 }
 
 :root.no_shaders input[type=color] {
@@ -322,4 +347,9 @@ select {
 
 button.disabled {
     opacity: 55%;
+}
+
+#settings_divider {
+    margin-top: 1rem;
+    border-bottom: 1px solid white;
 }
