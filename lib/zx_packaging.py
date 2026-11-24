@@ -1,31 +1,11 @@
 from pathlib import Path
-import shutil
-import random
 import json
-import pathlib
-import time
 import os
-from collections.abc import Iterable
+from lib.utils import flatten, make_tags
+
 new_games = set()
 
 ignorelist = ["UnityCrashHandler64", "UnityCrashHandler"] #we pick the largest .exe in the game folder
-
-def flatten1(nested_list):
-    for item in nested_list:
-        if isinstance(item, Iterable) and not isinstance(item, (str, bytes)):
-            yield from flatten(item)
-        else:
-            yield item
-def flatten(nested):
-    return list(flatten1(nested))
-def make_tags(tags_dict):
-    out = []
-    for key in tags_dict:
-        if tags_dict[key](None):
-            out.append(key)
-    out.sort()
-    return out
-
 readDir = Path(".")
 
 def update_games_internal():
@@ -92,8 +72,8 @@ def update_games_internal():
                     "PhotonServer5": lambda _: (not cwd.joinpath("PhotonLicensing.dll").exists()) and cwd.joinpath("PhotonHostRuntime.dll").exists(),
                 })
             }, indent=2))
-
 # add a UI hint that more games have been added if autodetect finishes after this is called
+
 def get_games():
     files = list(readDir.rglob("reclick.json"))
     out = {}
@@ -111,55 +91,3 @@ def get_games():
             f.unlink(True)
             del out[str(f)]
     return out
-
-def mk_steam_uuid():
-    STEAMID = "7656"
-    for i in range(13):
-        STEAMID += str(random.randint(0, 9))
-    return STEAMID
-
-def fixup_conf(obj):
-    if len(obj["SteamID"]) != 17 or not obj["SteamID"].startswith("7656"):
-        obj["SteamID"] = mk_steam_uuid()
-    if len(obj["Username"]) == 0:
-        obj["Username"] = mk_new_user()
-    obj["Username"] = obj["Username"].replace(" ", "_").strip()
-    return obj
-
-def mk_new_user():
-    USER = "RETCONPLAYER"
-    for i in range(4):
-        USER += str(random.randint(0, 9))
-    return USER
-
-def write_conf(obj):
-    print(obj)
-    if obj is None:
-        return
-    with open(readDir.joinpath("reclick.root.json"), "w") as f:
-        f.write(json.dumps(fixup_conf(obj), indent=2))
-
-DEFAULTS = {
-    "Username": mk_new_user(),
-    "SteamID": mk_steam_uuid(),
-    "PhotonHost": "127.0.0.1",
-    "HostAddress": "127.0.0.1",
-    "ReplaceSteamAPI": "enable"
-}
-
-def create_default_conf():
-    print("Generating new Steam ID...")
-    write_conf(DEFAULTS)
-
-def read_cfg():
-    if not readDir.joinpath("reclick.root.json").exists():
-        create_default_conf()
-    out = DEFAULTS.copy()
-    try:
-        with open(readDir.joinpath("reclick.root.json")) as f:
-            out.update(json.loads(f.read()))
-    except:
-        print("Encountered corrupt config, regenerating...")
-        create_default_conf()
-    return fixup_conf(out)
-    

@@ -1,12 +1,6 @@
-# ---THISISAVALIDFILEALLISGOOD---
 import shutil
 import sys
-import os
-import pathlib
 import time
-import glob
-import socket
-import threading
 from pathlib import Path
 import subprocess
 
@@ -41,9 +35,8 @@ except Exception as e:
 
 import lib.zx_packaging as zx_packaging
 import lib.zx_launching as zx_launching
-
-BASE = "https://zxmushroom63.github.io/reclick"  # selfhosting is easy btw. or just blank this to force offline
-
+import lib.settings.zx_settings as zx_settings
+import lib.utils as utils
 
 class Interop:
     def get_library(self):
@@ -59,23 +52,16 @@ class Interop:
         zx_launching.close_game(config_obj)
 
     def read_cfg(self):
-        return zx_packaging.read_cfg()
+        return zx_settings.read_cfg()
 
     def write_cfg(self, obj):
-        zx_packaging.write_conf(obj)
+        return zx_settings.write_conf(obj)
 
     def generate_steam_id(self):
-        return zx_packaging.mk_steam_uuid()
+        return utils.mk_steam_uuid()
 
     def get_nics(self):
-        out = {}
-        interfaces = psutil.net_if_addrs()
-        for interface_name, address_list in interfaces.items():
-            out[interface_name] = []
-            for addr in address_list:
-                if addr.family == socket.AF_INET:
-                    out[interface_name].append(addr.address)
-        return out
+        return utils.get_nics()
 
     def lanpatch(self, broadcastAddr):
         penguin = not sys.platform.startswith("win")
@@ -100,7 +86,6 @@ class Interop:
     def has_frida(self):
         try:
             import frida
-
             return True
         except:
             return False

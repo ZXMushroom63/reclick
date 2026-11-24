@@ -52,7 +52,7 @@
                         custom photon server:
                         <input data-setting="PhotonHost" /><br />
                         replace steam GSE DLLs:
-                        <input data-setting="ReplaceSteamAPI" /><br />
+                        <input type=checkbox data-setting="ReplaceSteamAPI" /><br />
                         <br />
                         <small>pretend there are other game settings here</small
                         ><br />
@@ -66,6 +66,36 @@
 
         <!-- ---THISISAVALIDFILEALLISGOOD--- -->
         <script>
+            HTMLElement.prototype.get_value = function () {
+                if (this instanceof HTMLTextAreaElement) {
+                    return this.value;
+                }
+                if (this instanceof HTMLInputElement) {
+                    if (this.getAttribute("type") === "checkbox") {
+                        return this.checked;
+                    } else {
+                        return "" + this.value;
+                    }
+                }
+                if (this instanceof HTMLSelectElement) {
+                    return this.value;
+                }
+                return "";
+            }
+
+            HTMLElement.prototype.set_value = function (x) {
+                if (this instanceof HTMLTextAreaElement) {
+                    this.value = x;
+                }
+                if (this instanceof HTMLInputElement) {
+                    if (this.getAttribute("type") === "checkbox") {
+                        this.checked = x;
+                    } else {
+                        this.value = x;
+                    }
+                }
+            }
+
             let games = {};
             let games_internal = [];
             const waitForPywebview = async () => {
@@ -149,7 +179,7 @@
                         `[data-setting="${ent[0]}"]`,
                     );
                     if (settingTarget) {
-                        settingTarget.value = ent[1];
+                        settingTarget.set_value(ent[1]);
                         settingTarget.onblur = () => {
                             reload_cfg();
                         };
@@ -167,12 +197,12 @@
                 [...document.querySelectorAll(`[data-setting]`)].forEach(
                     (setting) => {
                         conf[setting.getAttribute("data-setting")] =
-                            setting.value.trim();
+                            setting.get_value();
                     },
                 );
                 console.log(conf);
-                await window.pywebview.api.write_cfg(conf);
-                await load_cfg(conf);
+                const newCf = await window.pywebview.api.write_cfg(conf);
+                await load_cfg(newCf);
                 return conf;
             }
             let has_frida = false;
