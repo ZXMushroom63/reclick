@@ -57,6 +57,12 @@ class Interop:
     def write_cfg(self, obj):
         return zx_settings.write_conf(obj)
 
+    def read_gameconf(self, cfgPath):
+        return zx_settings.read_gameconf(cfgPath)
+    
+    def write_gameconf(self, cfgPath, obj):
+        return zx_settings.write_gameconf(cfgPath, obj)
+
     def generate_steam_id(self):
         return utils.mk_steam_uuid()
 
