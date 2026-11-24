@@ -1,3 +1,7 @@
+import re
+import shutil
+import json
+import xml.etree.ElementTree as ET
 from lib.patches.base_patch import BasePatch
 
 class PhotonHostPatch(BasePatch):
