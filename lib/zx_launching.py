@@ -35,7 +35,7 @@ def launch_game(configPath, root):
     
     if config["Settings"]["EnableMods"]:
         env["WINEDLLOVERRIDES"] = "winhttp=n,b;version=n,b;dinput8=n,b"
-        env["DOORSTOP_DISABLE"] = "0"
+        env.pop("DOORSTOP_DISABLE", None)
     else:
         env["WINEDLLOVERRIDES"] = "dinput8=n,b"
         env["DOORSTOP_DISABLE"] = "1"
