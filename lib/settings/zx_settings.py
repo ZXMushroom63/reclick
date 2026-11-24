@@ -64,11 +64,23 @@ def internal_fixup_conf(_obj, SETTING_DEFINITIONS, regenArg = None):
 def fixup_conf(_obj):
     return internal_fixup_conf(_obj, MAINSETTING_DEFINITIONS)
 
-def fixup_gameconf(_obj, gamefile):
-    return internal_fixup_conf(_obj, GAMESETTING_DEFINITIONS, gamefile)
+def fixup_gameconf(__obj, gamefile):
+    _obj = __obj.copy()
+    if not "Settings" in _obj:
+        _obj["Settings"] = {}
+    _obj["Settings"] = internal_fixup_conf(_obj["Settings"], GAMESETTING_DEFINITIONS, gamefile)
+    return _obj
+
+def write_gameconf(obj):
+    if obj is None:
+        return
+    fixed_ver = fixup_conf(obj)
+    with open(readDir.joinpath("reclick.root.json"), "w") as f:
+        f.write(json.dumps(fixed_ver, indent=2))
+    return fixed_ver
 
 def create_default_gameconf(gamefile):
-    return fixup_gameconf({}, gamefile)
+    return fixup_gameconf({}, gamefile)["Settings"]
 
 def write_conf(obj):
     if obj is None:

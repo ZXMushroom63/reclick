@@ -97,8 +97,5 @@ def get_games():
     
     for f in out:
         obj = json.load(open(f, "r"))
-        if not "Settings" in obj:
-            obj["Settings"] = {}
-        obj["Settings"] = fixup_gameconf(obj["Settings"], gamePathMap[str(f)])
-        json.dump(obj, open(f, "w"))
+        json.dump(fixup_gameconf(obj, gamePathMap[str(f)]), open(f, "w"))
     return out

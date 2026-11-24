@@ -49,16 +49,22 @@
                     <td id="right">
                         <div id="settingsWrapper">
                             <u>global settings</u><br />
+
                             username: <input data-setting="Username" /><br />
+
                             steam id: <input data-setting="SteamID" />
+
                             <button id="randomise_steam_id">⚂</button><br />
                             custom photon server:
+
                             <input data-setting="PhotonHost" /><br />
+
                             replace steam GSE DLLs:
                             <input
                                 type="checkbox"
                                 data-setting="ReplaceSteamAPI"
                             /><br />
+
                             gui color:
                             <input
                                 type="number"
@@ -66,34 +72,43 @@
                                 max="360"
                                 data-setting="RetconHue"
                             /><br />
+
                             disable shaders:
                             <input
                                 type="checkbox"
                                 data-setting="NoShaders"
                             /><br />
+
                             <div id="settings_divider"></div>
+
                             <br />
-                            <u>game settings</u><br />
+                            <u id="game_heading">game settings</u><br />
+
                             menu name:
                             <input data-gamesetting="DisplayName" /><br />
+
                             menu color:
                             <input
                                 type="color"
                                 data-gamesetting="Color"
                                 value="#FFFFFF"
                             /><br />
+
                             enable bepinex:
                             <input
                                 type="checkbox"
                                 data-gamesetting="EnableMods"
                             /><br />
+
                             enable steam overlay:
                             <input
                                 type="checkbox"
                                 data-gamesetting="GbeOverlay"
                             /><br />
+
                             launch params:
                             <input data-gamesetting="Arguments" /><br />
+
                             no hw accel:
                             <input
                                 type="checkbox"
@@ -218,12 +233,16 @@
                 );
             const game_entry_map = new Map();
             function draw_game(gameEntry, left) {
-                if (game_entry_map.has(gameEntry[0])) {
-                    left.appendChild(game_entry_map.get(gameEntry[0]));
+                const cfgPath = gameEntry[0];
+                if (game_entry_map.has(cfgPath)) {
+                    const elem = game_entry_map.get(cfgPath);
+                    if (cfgPath === selectedGame) {
+                        elem.classList.add("selected");
+                    }
+                    left.appendChild(elem);
                     return;
                 }
                 try {
-                    const cfgPath = gameEntry[0];
                     const json = gameEntry[1];
                     const gameContainer = document.createElement("div");
                     if (cfgPath === selectedGame) {
@@ -233,12 +252,9 @@
                         if (e.target.tagName.toLowerCase() === "button") {
                             return;
                         }
-                        document.body.classList.toggle("changingsettings");
-                        [...document.querySelectorAll(".selected")].forEach(
-                            (x) => x.classList.remove("selected"),
-                        );
-                        gameContainer.classList.add("selected");
+                        document.body.classList.add("changingsettings");
                         selectedGame = cfgPath;
+                        redraw_games();
                     });
                     gameContainer.classList.add("game");
                     const intern = is_internal(json.Tags);
@@ -330,9 +346,24 @@
                     console.error(error);
                 }
             }
+            function reload_gamesettings() {
+                if (!selectedGame) {
+                    return;
+                }
+                document.querySelector("#game_heading").innerText =
+                    JSON.parse(games[selectedGame])
+                        .GamePath.split("/")
+                        .map((x) => x.split("\\"))
+                        .flat()
+                        .toReversed()[0]
+                        .replaceAll(".exe", "")
+                        .toLowerCase() + " settings";
+                
+            }
             function redraw_games() {
                 const left = document.querySelector("#left");
                 const oldScroll = left.scrollTop;
+                [...document.querySelectorAll(".game.selected")].forEach(x => x.classList.remove("selected"));
                 [...document.querySelectorAll(".game")].forEach((x) =>
                     x.remove(),
                 );
@@ -347,6 +378,8 @@
                         selectedGame ||= ent[0];
                         draw_game(ent, left);
                     });
+                reload_gamesettings();
+                left.scrollTop = oldScroll;
                 log_to_console("Redrew games panel");
             }
             addEventListener("keydown", (e) => {

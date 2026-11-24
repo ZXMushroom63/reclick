@@ -9,10 +9,17 @@ function log_to_console(x) {
     draw_bg();
     console.log(x);
 }
+let concurrent_logdraws = 0;
 async function draw_bg() {
+    concurrent_logdraws++;
     logs.innerText = "";
     for (let i = 0; i < logs_buffer.length; i++) {
         await sleep(100);
+        if (concurrent_logdraws > 1) {
+            concurrent_logdraws--;
+            return;
+        }
         logs.innerText += logs_buffer[i] + "\n";
     }
+    concurrent_logdraws--;
 }
