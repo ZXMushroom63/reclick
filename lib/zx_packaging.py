@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import os
 from lib.utils import flatten, make_tags
+from lib.settings.zx_settings import create_default_gameconf, fixup_gameconf
 
 new_games = set()
 
@@ -42,6 +43,8 @@ def update_games_internal():
             
     for game in new_games:
         cwd = game.parent
+        if cwd.joinpath("reclick.json").exists():
+            continue
         appid = 0
         appids = list(cwd.rglob("steam_appid.txt"))
         if len(appids) > 0:
@@ -51,13 +54,12 @@ def update_games_internal():
                 except:
                     pass
         with open(cwd.joinpath("reclick.json"), "w") as f:
+            print(f"Rewrote config for: {game}")
             f.write(json.dumps({
                 "Name": game.name.replace(".exe", ""),
-                "DisplayName": game.name.replace(".exe", ""),
                 "GamePath": str(game.relative_to(cwd)),
                 "AppID": appid,
-                "Arguments": "",
-                "Color": "none",
+                "Settings": create_default_gameconf(game),
                 "Tags": make_tags({
                     "Positron": lambda _: cwd.joinpath("needs_photon_address.txt").exists(), #custom photon server patch
                     "PhotonServerSettings": lambda _: len(list(cwd.joinpath("BepInEx").joinpath("config").rglob("uk.1a3.photonserversettings.cfg"))) > 0,
@@ -77,6 +79,7 @@ def update_games_internal():
 def get_games():
     files = list(readDir.rglob("reclick.json"))
     out = {}
+    gamePathMap = {}
     for f in files:
         handle = open(f, "r")
         out[str(f)] = handle.read()
@@ -84,10 +87,18 @@ def get_games():
         
         try:
             obj = json.loads(out[str(f)])
+            gamePathMap[str(f)] = Path(obj["GamePath"])
             if not f.parent.joinpath(Path(obj["GamePath"])).exists():
                 f.unlink(True)
                 del out[str(f)]
         except:
             f.unlink(True)
             del out[str(f)]
+    
+    for f in out:
+        obj = json.load(open(f, "r"))
+        if not "Settings" in obj:
+            obj["Settings"] = {}
+        obj["Settings"] = fixup_gameconf(obj["Settings"], gamePathMap[str(f)])
+        json.dump(obj, open(f, "w"))
     return out

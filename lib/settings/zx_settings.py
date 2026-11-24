@@ -7,14 +7,16 @@ import inspect
 readDir = Path(".")
 
 
-SETTING_DEFINITIONS: dict[str,Setting] = {}
+MAINSETTING_DEFINITIONS: dict[str,Setting] = {}
+GAMESETTING_DEFINITIONS: dict[str,Setting] = {}
+
 @dataclass
 class Setting:
     id: str
     owner: dict[str,Setting]
     kind: str
     _validate: Callable[[Any], bool]
-    regen: Callable[[None], Any] #generate a default value
+    regen: Callable[[Any], Any] #generate a default value
     quickfix: Callable[[Any], Any]
     def validate(self, value) -> bool:
         typename = type(value).__name__
@@ -23,7 +25,7 @@ class Setting:
             return False
         return self._validate(value)
     def __post_init__(self) -> None:
-        SETTING_DEFINITIONS[self.id] = self
+        self.owner[self.id] = self
 
 def nullcall(func):
     sig = inspect.signature(func)
@@ -37,7 +39,7 @@ def nullcall(func):
     
     return func(**kwargs)
 
-def fixup_conf(_obj):
+def internal_fixup_conf(_obj, SETTING_DEFINITIONS, regenArg = None):
     obj = _obj.copy()
     out_obj = {}
     keys = SETTING_DEFINITIONS.keys()
@@ -46,12 +48,27 @@ def fixup_conf(_obj):
         
         if key in obj: #validate and fix existing settings
             if not definition.validate(obj[key]):
-                obj[key] = nullcall(definition.regen)
+                if regenArg:
+                    obj[key] = definition.regen(regenArg)
+                else:
+                    obj[key] = nullcall(definition.regen)
             out_obj[key] = definition.quickfix(obj[key])
         else: #regen missing settings
-            out_obj[key] = nullcall(definition.regen)
+            if regenArg:
+                out_obj[key] = definition.regen(regenArg)
+            else:
+                out_obj[key] = nullcall(definition.regen)
             out_obj[key] = definition.quickfix(out_obj[key])
     return out_obj
+
+def fixup_conf(_obj):
+    return internal_fixup_conf(_obj, MAINSETTING_DEFINITIONS)
+
+def fixup_gameconf(_obj, gamefile):
+    return internal_fixup_conf(_obj, GAMESETTING_DEFINITIONS, gamefile)
+
+def create_default_gameconf(gamefile):
+    return fixup_gameconf({}, gamefile)
 
 def write_conf(obj):
     if obj is None:
@@ -82,10 +99,13 @@ def read_cfg():
 #settings impls
 from lib.utils import mk_new_user, mk_steam_uuid, passthrough, verify_ipv4
 
-# GLOBAL SETTINGS
+
+###################
+#  MAIN SETTINGS  #
+###################
 Setting(
     "SteamID",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "str",
     lambda x: len(x) == 17 and x.startswith("7656"),
     mk_steam_uuid,
@@ -94,7 +114,7 @@ Setting(
 
 Setting(
     "Username",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "str",
     lambda x: len(x) > 0 and len(x) < 64,
     mk_new_user,
@@ -103,7 +123,7 @@ Setting(
 
 Setting(
     "PhotonHost",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "str",
     verify_ipv4,
     lambda _: "127.0.0.1",
@@ -112,7 +132,7 @@ Setting(
 
 Setting(
     "HostAddress",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "str",
     verify_ipv4,
     lambda _: "127.0.0.1",
@@ -121,7 +141,7 @@ Setting(
 
 Setting(
     "ReplaceSteamAPI",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "bool",
     lambda _: True,
     lambda _: True,
@@ -130,7 +150,7 @@ Setting(
 
 Setting(
     "RetconHue",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "int",
     lambda x: x >= 0 and x <= 360,
     lambda _: 0,
@@ -139,9 +159,68 @@ Setting(
 
 Setting(
     "NoShaders",
-    SETTING_DEFINITIONS,
+    MAINSETTING_DEFINITIONS,
     "bool",
     lambda _: True,
     lambda _: False,
+    lambda x: x
+)
+
+
+###################
+#  GAME SETTINGS  #
+###################
+
+Setting(
+    "DisplayName",
+    GAMESETTING_DEFINITIONS,
+    "str",
+    lambda x: len(x) > 0,
+    lambda gamefile: gamefile.name.replace(".exe", "").strip(),
+    lambda x: x.strip()
+)
+
+Setting(
+    "Color",
+    GAMESETTING_DEFINITIONS,
+    "str",
+    lambda x: len(x) <= 7 and x.startswith("#"),
+    lambda gamefile: "#FFFFFF",
+    lambda x: x.strip()
+)
+
+Setting(
+    "EnableMods",
+    GAMESETTING_DEFINITIONS,
+    "bool",
+    lambda x: True,
+    lambda gamefile: True,
+    lambda x: x
+)
+
+Setting(
+    "GbeOverlay",
+    GAMESETTING_DEFINITIONS,
+    "bool",
+    lambda x: True,
+    lambda gamefile: True,
+    lambda x: x
+)
+
+Setting(
+    "Arguments",
+    GAMESETTING_DEFINITIONS,
+    "str",
+    lambda x: True,
+    lambda gamefile: "",
+    lambda x: x.strip()
+)
+
+Setting(
+    "NoHwAccel",
+    GAMESETTING_DEFINITIONS,
+    "bool",
+    lambda x: True,
+    lambda gamefile: True,
     lambda x: x
 )
