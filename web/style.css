@@ -6,6 +6,10 @@
     padding: 0;
 }
 
+html {
+    --hueOffset: 0deg;
+}
+
 button {
     padding: 4px;
     border: 1px solid white;

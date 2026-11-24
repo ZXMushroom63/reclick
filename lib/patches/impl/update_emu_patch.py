@@ -4,7 +4,7 @@ from lib.patches.base_patch import BasePatch
 
 class UpdateEmuPatch(BasePatch):
     def patch_impl(self, search_dir, global_conf) -> bool:
-        if not (global_conf["ReplaceSteamAPI"].lower() in ["enable", "yes", "y"]):
+        if not global_conf["ReplaceSteamAPI"]:
             return False
         GSE_FORK_DLLS = [
             "steam_api.dll",

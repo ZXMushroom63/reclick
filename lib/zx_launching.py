@@ -22,7 +22,10 @@ def launch_game(configPath, config, modded, flags, prefix, root):
         env["VK_DRIVER_FILES"] = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json"
         env["WINEDEBUG"] = "-all"
 
-    os.mkdir(root.joinpath(".eosr").absolute())
+    try:
+        os.mkdir(root.joinpath(".eosr").absolute())
+    except:
+        pass
     env["EOSR_DATA_DIR"] = str(root.joinpath(".eosr").absolute())
     env["EOSR_ENABLE_LAN"] = "1"
     env["EOSR_TRACE"] = "lifecycle"
