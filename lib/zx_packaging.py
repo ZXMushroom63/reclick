@@ -10,7 +10,7 @@ ignorelist = ["UnityCrashHandler64", "UnityCrashHandler"] #we pick the largest .
 readDir = Path(".")
 
 def update_games_internal():
-    files = flatten(map(lambda x: readDir.rglob(x), ["steam_api.dll", "steam_api64.dll"]))
+    files = flatten(map(lambda x: readDir.rglob(x), ["steam_api.dll", "steam_api64.dll", "GameAssembly.dll", "Assembly-CSharp.dll"]))
 
     matches = set()
 
