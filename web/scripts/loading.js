@@ -1,7 +1,13 @@
 async function load_cfg(inCf) {
     const conf = inCf || (await window.pywebview.api.read_cfg());
     await update_nic_list();
-    document.documentElement.style.setProperty("--hueOffset", conf["RetconHue"] + "deg");
+    if (conf["NoShaders"]) {
+        document.documentElement.classList.add("no_shaders");
+        document.documentElement.style.setProperty("--hueOffset", "0deg");
+    } else {
+        document.documentElement.classList.remove("no_shaders");
+        document.documentElement.style.setProperty("--hueOffset", conf["RetconHue"] + "deg");
+    }
     Object.entries(conf).forEach((ent) => {
         const settingTarget = document.querySelector(
             `[data-setting="${ent[0]}"]`,
@@ -13,6 +19,11 @@ async function load_cfg(inCf) {
             };
             settingTarget.onkeydown = (e) => {
                 if (e.key === "Enter") {
+                    settingTarget.blur();
+                }
+            };
+            settingTarget.onmouseup = (e) => {
+                if (settingTarget.type === "checkbox") {
                     settingTarget.blur();
                 }
             };

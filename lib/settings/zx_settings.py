@@ -11,7 +11,7 @@ SETTING_DEFINITIONS: dict[str,Setting] = {}
 @dataclass
 class Setting:
     id: str
-    name: str
+    owner: dict[str,Setting]
     kind: str
     _validate: Callable[[Any], bool]
     regen: Callable[[None], Any] #generate a default value
@@ -82,9 +82,10 @@ def read_cfg():
 #settings impls
 from lib.utils import mk_new_user, mk_steam_uuid, passthrough, verify_ipv4
 
+# GLOBAL SETTINGS
 Setting(
     "SteamID",
-    "Steam ID",
+    SETTING_DEFINITIONS,
     "str",
     lambda x: len(x) == 17 and x.startswith("7656"),
     mk_steam_uuid,
@@ -93,7 +94,7 @@ Setting(
 
 Setting(
     "Username",
-    "Username",
+    SETTING_DEFINITIONS,
     "str",
     lambda x: len(x) > 0 and len(x) < 64,
     mk_new_user,
@@ -102,7 +103,7 @@ Setting(
 
 Setting(
     "PhotonHost",
-    "Photon IP",
+    SETTING_DEFINITIONS,
     "str",
     verify_ipv4,
     lambda _: "127.0.0.1",
@@ -111,7 +112,7 @@ Setting(
 
 Setting(
     "HostAddress",
-    "Host Address",
+    SETTING_DEFINITIONS,
     "str",
     verify_ipv4,
     lambda _: "127.0.0.1",
@@ -120,7 +121,7 @@ Setting(
 
 Setting(
     "ReplaceSteamAPI",
-    "Update GBE",
+    SETTING_DEFINITIONS,
     "bool",
     lambda _: True,
     lambda _: True,
@@ -129,9 +130,18 @@ Setting(
 
 Setting(
     "RetconHue",
-    "Menu Color",
+    SETTING_DEFINITIONS,
     "int",
     lambda x: x >= 0 and x <= 360,
     lambda _: 0,
+    lambda x: x
+)
+
+Setting(
+    "NoShaders",
+    SETTING_DEFINITIONS,
+    "bool",
+    lambda _: True,
+    lambda _: False,
     lambda x: x
 )
