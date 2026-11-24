@@ -34,11 +34,11 @@ def launch_game(configPath, root):
     env["EOSR_DISPLAY_NAME"] = global_conf["Username"]
     
     if config["Settings"]["EnableMods"]:
-        env["WINEDLLOVERRIDES"] = "dinput8=n,b"
-        env["DOORSTOP_DISABLE"] = "1"
-    else:
         env["WINEDLLOVERRIDES"] = "winhttp=n,b;version=n,b;dinput8=n,b"
         env["DOORSTOP_DISABLE"] = "0"
+    else:
+        env["WINEDLLOVERRIDES"] = "dinput8=n,b"
+        env["DOORSTOP_DISABLE"] = "1"
     
     if shutil.which("nvidia-offload"):
         command.insert(0, "nvidia-offload")
