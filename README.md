@@ -9,19 +9,16 @@ All-in-one userfriendly GUI for GSE/GBE games, automatically managing Photon for
 - FRIDA SUPPORT
     - `python -m pip install frida-tools` (used for CLR hooking)
 
-- Features so far:
-    - really cool visual style
+- Features:
     - autodetects games and their features
     - automatically handles usernames and userIDs
-    - easy VLAN fixes for windows (instant firewall rules, broadcast routing, apilib unfirewalling)
-    - linux and windows support (for games and photon server v4)
+    - easy VLAN fixes for windows (instant firewall rules, broadcast routing)
+    - linux and windows support
+    - one-click self-hosting for photon v4 and v5
+        - photon v5 requires the python frida-tools package to be installed
+        - photon v5 does not work on linux for now
         - photon v4 on linux requires .NET from microsoft to be installed (winetricks recommended)
+    - autopatches PhotonServerSettings
+    - custom vulkan icd settings on linux
 - Todo: 
-    - Photon v5 support (maybe with Frida hooking on linux to bypass platform checks?)
-    - Autopatch PhotonRedirector and PhotonServerSettings
-    - Username setting
-    - Better settings GUI
-    - BepInEx modloader toggle
-    - settings toggle
-    - add options for per-game launch settings
-    - add Vulkan ICD file options
+    - Autopatch PhotonRedirector
