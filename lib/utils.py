@@ -89,7 +89,7 @@ def get_vk_icd_files():
     if vk_cache != None:
         return vk_cache
     if not sys.platform.startswith("linux"):
-        return {"", "none"}
+        return {"": "none"}
     icdMap = {}
     for pth in VK_DIRECTORIES.keys():
         directory = Path(pth).expanduser()
