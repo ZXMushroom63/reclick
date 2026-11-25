@@ -70,6 +70,6 @@ function transformColor(hexStr, degrees) {
 
     const [newR, newG, newB] = hslToRgb(h, s, l);
     const out = rgbToHex(newR, newG, newB);
-    console.log(`${hexStr} => ${out}`);
+    //console.log(`${hexStr} => ${out}`);
     return out;
 }

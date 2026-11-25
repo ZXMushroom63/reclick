@@ -213,6 +213,7 @@ tr {
     padding: 8px;
     cursor: pointer;
     margin-bottom: 1rem;
+    height: 3rem;
 }
 
 .game * {
@@ -378,4 +379,8 @@ button.disabled {
     background: transparent;
     font-family: monospace;
     color: #CCC;
+    height: 2rem;
+    position: relative;
+    top: -0.5rem;
+    padding: 0;
 }

@@ -155,15 +155,43 @@ searchbox.addEventListener("keydown", (e)=>{
         }
     }
 });
-document.addEventListener("keydown", (e)=>{
+window.addEventListener("keydown", (e)=>{
     if ((e.key.length !== 1) || e.ctrlKey || e.altKey || e.metaKey) {
         return;
     }
-    if (![window, document.documentElement, document.body].includes(e.target)) {
+    if (![window, document.documentElement, document.body].includes(e.target) && !["SELECT", "BUTTON"].includes(e.target.tagName)) {
         return;
     }
     e.preventDefault();
+    e.stopPropagation();
     searchbox.focus();
     searchbox.value = e.key;
     searchbox.dispatchEvent(new InputEvent("input"));
-});
+}, true);
+
+window.addEventListener("keydown", (e)=>{
+    if (![window, document.documentElement, document.body].includes(e.target) && !["SELECT", "BUTTON"].includes(e.target.tagName)) {
+        return;
+    }
+    if (e.key === "Enter" && e.shiftKey) {
+        return buttonMaps.get(selectedGame)[0].click();
+    }
+    if (!["ArrowUp", "ArrowDown", "ArrowRight", "PageUp"].includes(e.key)) {
+        return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    const keys = Object.keys(games);
+    if (e.key === "ArrowUp") {
+        selectedGame = keys[Math.max(0, keys.indexOf(selectedGame) - 1)];
+    } else if (e.key === "ArrowDown") {
+        selectedGame = keys[Math.min(keys.length-1,keys.indexOf(selectedGame) + 1)];
+    } else {
+        selectedGame = keys[0];
+    }
+    const newIndex = keys.indexOf(selectedGame);
+    redraw_games();
+    const cont = document.querySelector("#left");
+    cont.scrollTop = (document.querySelector(".game.selected").offsetTop + 33 + 16) - (cont.clientHeight / 2);
+    // base 16px + serch 32px - each(1px border + 8px padding + 24px content - 16px? margin)
+}, true);
