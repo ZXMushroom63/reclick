@@ -35,9 +35,11 @@ button:active {
 .crt {
     filter: saturate(25) brightness(0.47) contrast(1.8) hue-rotate(var(--hueOffset)) brightness(7);
 }
+
 :root.no_shaders .crt {
     filter: brightness(1.5);
 }
+
 .crt::after {
     content: " ";
     display: block;
@@ -74,15 +76,18 @@ button:active {
             rgba(255, 0, 255, 0.02),
             rgba(0, 255, 255, 0.02));
     z-index: 2;
-    background-size: /* 100% 5px 5px 100% */
+    background-size:
+        /* 100% 5px 5px 100% */
         100% 0.199vw,
         0.2111vh 100%;
     pointer-events: none;
 }
 
-:root.no_shaders .crt::before, :root.no_shaders .crt::after {
+:root.no_shaders .crt::before,
+:root.no_shaders .crt::after {
     background: transparent;
 }
+
 :root.no_shaders .glowy {
     text-shadow: none;
 }
@@ -225,6 +230,7 @@ tr {
     color: slateblue;
     opacity: 90%;
 }
+
 .game h3,
 .game small {
     display: block;
@@ -237,11 +243,13 @@ tr {
 .game.selected h3 {
     text-decoration: underline;
 }
+
 .game.selected * {
     background: transparent;
 }
+
 .game.selected {
-    background: linear-gradient(0deg,rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.00) 100%);
+    background: linear-gradient(293deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.00) 100%)
 }
 
 #right {
@@ -300,6 +308,7 @@ input[type=checkbox] {
     filter: hue-rotate(calc(360deg - var(--hueOffset) + 20deg)) brightness(0.6) contrast(50);
     outline: transparent;
 }
+
 input[type=checkbox]::checkmark {
     color: black;
 }
