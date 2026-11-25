@@ -136,6 +136,7 @@ body {
     justify-content: center;
     justify-self: center;
     margin-right: auto;
+    font-family: monospace;
 }
 
 #repatch_section {
@@ -357,4 +358,15 @@ button.disabled {
 #settings_divider {
     margin-top: 1rem;
     border-bottom: 1px solid white;
+}
+
+#gamesearch {
+    display: block;
+    border: 0;
+    outline: transparent;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    font-family: monospace;
+    color: #CCC;
 }

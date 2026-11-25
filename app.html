@@ -26,6 +26,7 @@
                 <tr>
                     <td id="leftOuter">
                         <div id="left">
+                            <input type="search" placeholder="search..." id="gamesearch">
                             <div class="game">
                                 <table>
                                     <tr>
@@ -133,6 +134,7 @@
         <script src="web/scripts/update_nic_list.js"></script>
         <script src="web/scripts/loading.js"></script>
         <script src="web/scripts/loading_game.js"></script>
+        <script src="web/scripts/search.js"></script>
 
         <script>
             let games = (globalThis.games = {});
@@ -411,6 +413,8 @@
                 [...document.querySelectorAll(".game")].forEach((x) =>
                     x.remove(),
                 );
+
+                sort_games();
 
                 Object.entries(games)
                     .map((ent) => [ent[0], ent[1]])
