@@ -149,7 +149,7 @@ Setting(
     MAINSETTING_DEFINITIONS,
     "str",
     lambda x: x in get_vk_icd_files().keys(),
-    lambda _: list(get_vk_icd_files().keys())[0],
+    lambda _: "",
     lambda x: x
 )
 

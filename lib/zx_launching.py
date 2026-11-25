@@ -21,7 +21,7 @@ def launch_game(configPath, root):
     fileName = gamePath.name
     if penguin:
         command.insert(0, "wine")
-        if Path(global_conf["VulkanICD"]).exists():
+        if len(global_conf["VulkanICD"]) > 0 and Path(global_conf["VulkanICD"]).exists():
             env["VK_DRIVER_FILES"] = global_conf["VulkanICD"]
         env["WINEDEBUG"] = "-all"
 
