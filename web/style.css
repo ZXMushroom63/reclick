@@ -278,7 +278,7 @@ select {
 input[type=color] {
     width: 1.8rem;
     height: 2rem;
-    transform: scale(2) translateY(-0.25rem);
+    transform: scale(1) translateY(-0.35rem);
     border: 0;
     filter: hue-rotate(calc(360deg - var(--hueOffset))) saturate(0.06);
     margin-left: 2rem;
