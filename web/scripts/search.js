@@ -140,8 +140,12 @@ function sort_games() {
         });
     }
 }
+
+const cont = document.querySelector("#left");
 searchbox.addEventListener("input", ()=>{
     sort_games();
+    //selectedGame = Object.keys(games)[0];
+    cont.scrollTop = 0;
     redraw_games();
 });
 let lastLaunchKeyb = Date.now();
@@ -189,9 +193,7 @@ window.addEventListener("keydown", (e)=>{
     } else {
         selectedGame = keys[0];
     }
-    const newIndex = keys.indexOf(selectedGame);
     redraw_games();
-    const cont = document.querySelector("#left");
     cont.scrollTop = (document.querySelector(".game.selected").offsetTop + 33 + 16) - (cont.clientHeight / 2);
     // base 16px + serch 32px - each(1px border + 8px padding + 24px content - 16px? margin)
 }, true);
