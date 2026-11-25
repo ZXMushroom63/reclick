@@ -113,13 +113,13 @@ function sort_games() {
     });
     if (search) {
         //levenshtein sort, substring, prefix
-        kvlist.sort((a, b)=>{
+        kvlist.sort((a, b) => {
             return levenshtein(search, a.i.toLowerCase()) - levenshtein(search, b.i.toLowerCase());
         });
-        kvlist.sort((a, b)=>{
+        kvlist.sort((a, b) => {
             return b.i.toLowerCase().includes(search) - a.i.toLowerCase().includes(search);
         });
-        kvlist.sort((a, b)=>{
+        kvlist.sort((a, b) => {
             return b.i.toLowerCase().startsWith(search) - a.i.toLowerCase().startsWith(search);
         });
         games = {};
@@ -142,14 +142,14 @@ function sort_games() {
 }
 
 const cont = document.querySelector("#left");
-searchbox.addEventListener("input", ()=>{
+searchbox.addEventListener("input", () => {
     sort_games();
     //selectedGame = Object.keys(games)[0];
     cont.scrollTop = 0;
     redraw_games();
 });
 let lastLaunchKeyb = Date.now();
-searchbox.addEventListener("keydown", (e)=>{
+searchbox.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && searchbox.value.trim() !== "") {
         const target = Object.keys(games)[0];
         const now = Date.now();
@@ -159,7 +159,7 @@ searchbox.addEventListener("keydown", (e)=>{
         }
     }
 });
-window.addEventListener("keydown", (e)=>{
+window.addEventListener("keydown", (e) => {
     if ((e.key.length !== 1) || e.ctrlKey || e.altKey || e.metaKey) {
         return;
     }
@@ -173,7 +173,7 @@ window.addEventListener("keydown", (e)=>{
     searchbox.dispatchEvent(new InputEvent("input"));
 }, true);
 
-window.addEventListener("keydown", (e)=>{
+window.addEventListener("keydown", (e) => {
     if (![window, document.documentElement, document.body].includes(e.target) && !["SELECT", "BUTTON"].includes(e.target.tagName)) {
         return;
     }
@@ -185,14 +185,26 @@ window.addEventListener("keydown", (e)=>{
     }
     e.preventDefault();
     e.stopPropagation();
+    
+    if (e.key === "ArrowRight") {
+        return
+    }
+
     const keys = Object.keys(games);
+    let delta = 1;
     if (e.key === "ArrowUp") {
-        selectedGame = keys[Math.max(0, keys.indexOf(selectedGame) - 1)];
-    } else if (e.key === "ArrowDown") {
-        selectedGame = keys[Math.min(keys.length-1,keys.indexOf(selectedGame) + 1)];
-    } else {
+        delta = -1;
+    } else if (e.key === "PageUp" ) {
         selectedGame = keys[0];
     }
+
+    let m = 0;
+    selectedGame = keys[Math.min(keys.length - 1, Math.max(0, keys.indexOf(selectedGame) + delta))];
+    while (is_internal(games[selectedGame].Tags) && m < 20) {
+        selectedGame = keys[Math.min(keys.length - 1, Math.max(0, keys.indexOf(selectedGame) + delta))];
+        m++;
+    }
+
     redraw_games();
     cont.scrollTop = (document.querySelector(".game.selected").offsetTop + 33 + 16) - (cont.clientHeight / 2);
     // base 16px + serch 32px - each(1px border + 8px padding + 24px content - 16px? margin)

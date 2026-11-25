@@ -241,11 +241,12 @@
                 return launchBtn;
             }
             const INTERNALS = ["PhotonServer4", "PhotonServer5"];
-            const is_internal = (tags) =>
-                INTERNALS.reduce(
+            function is_internal(tags) {
+                return INTERNALS.reduce(
                     (prevVal, tag) => prevVal || tags.includes(tag),
                     false,
                 );
+            }
             const game_entry_map = new Map();
             function draw_game(gameEntry, left) {
                 const hue = lastLoadedConf.RetconHue;
