@@ -108,7 +108,7 @@ def on_closed():
     print("Goodbye")
 
 
-window = webview.create_window("reclick", "app.html", js_api=Interop(), frameless=False)
+window = webview.create_window("retcon4", "app.html", js_api=Interop(), frameless=False)
 window.events.closed += on_closed
 perfstage("WebView init")
 webview.start(debug=False if len(sys.argv) > 0 else True)
