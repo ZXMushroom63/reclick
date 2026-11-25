@@ -3,7 +3,7 @@ import re
 
 #literally only used by REPO
 class PhotonServerSettingsPatch(BasePatch):
-    def patch_impl(self, search_dir, global_conf) -> bool:
+    def patch_impl(self, search_dir, global_conf, game_conf) -> bool:
         photonSS = list(search_dir.rglob("uk.1a3.photonserversettings.cfg"))
         for cfg in photonSS:
             new_content = ""

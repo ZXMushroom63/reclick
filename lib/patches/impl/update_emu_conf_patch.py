@@ -1,10 +1,11 @@
 from lib.patches.base_patch import BasePatch
 
 class UpdateEmuConfPatch(BasePatch):
-    def patch_impl(self, search_dir, global_conf) -> bool:
+    def patch_impl(self, search_dir, global_conf, game_conf) -> bool:
         usercfgs = []
         usercfgs.extend(list(search_dir.rglob("configs.user.ini")))
         usercfgs.extend(list(search_dir.rglob("configs.main.ini")))
+        usercfgs.extend(list(search_dir.rglob("configs.overlay.ini")))
 
         ST = 0
         for cfg in usercfgs:
@@ -13,6 +14,7 @@ class UpdateEmuConfPatch(BasePatch):
                 dt = x.readlines()
 
             ND = False
+            OD = False
             SD = False
             for ln in dt:
                 qLn = ln.strip()
@@ -25,6 +27,11 @@ class UpdateEmuConfPatch(BasePatch):
                         out.append(f"account_name={global_conf["Username"]}")
                         out.append("")
                         ND = True
+                if qLn.startswith("enable_experimental_overlay="):
+                    if not OD:
+                        out.append(f"enable_experimental_overlay={int(game_conf["Settings"]["GbeOverlay"])}")
+                        out.append("")
+                        OD = True
                 elif qLn.startswith("account_steamid="):
                     if not SD:
                         out.append(f"account_steamid={global_conf["SteamID"]}")

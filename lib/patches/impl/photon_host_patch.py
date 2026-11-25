@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from lib.patches.base_patch import BasePatch
 
 class PhotonHostPatch(BasePatch):
-    def patch_impl(self, search_dir, global_conf) -> bool:
+    def patch_impl(self, search_dir, global_conf, game_conf) -> bool:
         if not (search_dir.parent.name.lower() == "deploy" and search_dir.name.lower() == "bin_win64"):
             return False
         

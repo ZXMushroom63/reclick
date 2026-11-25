@@ -59,7 +59,7 @@ def launch_game(configPath, root):
     try:
         containerPath = gamePath.parent
         
-        patch_path(containerPath)
+        patch_path(containerPath, config)
         
         kwargs = {
             "env": env,

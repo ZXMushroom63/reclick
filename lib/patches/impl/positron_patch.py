@@ -2,7 +2,7 @@ from lib.patches.base_patch import BasePatch
 
 
 class PositronPatch(BasePatch):
-    def patch_impl(self, search_dir, global_conf) -> bool:
+    def patch_impl(self, search_dir, global_conf, game_conf) -> bool:
         positron = list(search_dir.rglob("needs_photon_address.txt")) + list(
             search_dir.rglob("needs_photoncpp_address.txt")
         )

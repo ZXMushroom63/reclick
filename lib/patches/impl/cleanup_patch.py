@@ -1,7 +1,7 @@
 from lib.patches.base_patch import BasePatch
 
 class CleanupPatch(BasePatch):
-    def patch_impl(self, search_dir, global_conf) -> bool:
+    def patch_impl(self, search_dir, global_conf, game_conf) -> bool:
         JT = 0
         
         junklogs = list(search_dir.rglob("STEAM_LOG*.log"))

@@ -3,7 +3,7 @@ from lib.patches.base_patch import BasePatch
 
 
 class UpdateEmuPatch(BasePatch):
-    def patch_impl(self, search_dir, global_conf) -> bool:
+    def patch_impl(self, search_dir, global_conf, game_conf) -> bool:
         if not global_conf["ReplaceSteamAPI"]:
             return False
         GSE_FORK_DLLS = [

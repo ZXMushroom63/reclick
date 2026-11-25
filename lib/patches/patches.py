@@ -13,7 +13,7 @@ for patch in patchfiles:
     builtname = "".join(map(lambda x: x.title(), patch.stem.split("_")))
     PATCHES.append(getattr(module, builtname)())
     
-def patch_path(search_dir):
+def patch_path(search_dir, game_conf):
     global_conf = zx_settings.read_cfg()
     for patch in PATCHES:
-        patch.patch(search_dir, global_conf)
+        patch.patch(search_dir, global_conf, game_conf)
