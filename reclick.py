@@ -3,6 +3,7 @@ import sys
 import time
 from pathlib import Path
 import subprocess
+from lib.utils import get_vk_icd_files
 
 sys.path.append(Path(__file__).resolve().parent.joinpath("lib"))  # fix imports
 root = Path(__file__).resolve().parent
@@ -68,6 +69,9 @@ class Interop:
 
     def get_nics(self):
         return utils.get_nics()
+
+    def get_vk_icd_files(self):
+        return utils.get_vk_icd_files()
 
     def lanpatch(self, broadcastAddr):
         penguin = not sys.platform.startswith("win")

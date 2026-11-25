@@ -29,4 +29,7 @@ HTMLElement.prototype.set_value = function (x) {
             this.value = x;
         }
     }
+    if (this instanceof HTMLSelectElement) {
+        this.value = x;
+    }
 }

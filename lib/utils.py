@@ -1,8 +1,11 @@
+import sys
 import random
 from collections.abc import Iterable
 import time
 import psutil
 import socket
+import hashlib
+from pathlib import Path
 
 def datenow():
     return int(time.time() * 1000)
@@ -64,3 +67,48 @@ def verify_ipv4(x):
         return False
     
     return True
+
+
+VK_DIRECTORIES = { #last takes priority | unique'd by checksum
+    "/usr/share/vulkan/icd.d/": "usr",
+    "/etc/vulkan/icd.d/": "etc",
+    "~/.local/share/vulkan/icd.d/": "~/.local",
+    "/run/opengl-driver/share/vulkan/icd.d/": "nix"
+}
+
+def hash_path(pth):
+    with open(pth, "r") as f:
+        text = f.read()
+        return hashlib.md5(text.encode("utf-8")).hexdigest()
+    return "0"
+
+
+vk_cache = None
+def get_vk_icd_files():
+    global vk_cache
+    if vk_cache != None:
+        return vk_cache
+    if not sys.platform.startswith("linux"):
+        return []
+    icdMap = {}
+    for pth in VK_DIRECTORIES.keys():
+        directory = Path(pth).expanduser()
+        if not directory.exists():
+            continue
+        matches = list(directory.glob("*.json"))
+        for match in matches:
+            hsh = hash_path(match)
+            icdMap[hsh] = str(match.absolute())
+    res = list(icdMap.values())
+    res.sort()
+    out = {}
+    for icd in res:
+        name = str(icd)
+        for base in VK_DIRECTORIES.keys():
+            name = name.replace(base, VK_DIRECTORIES[base] + " - ")
+        name = name.replace(".x86_64", "")
+        name = name.removesuffix(".json")
+        name = name.removesuffix("_icd")
+        out[str(icd)] = name
+    vk_cache = out
+    return out

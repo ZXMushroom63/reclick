@@ -3,6 +3,7 @@ import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
+from lib.utils import get_vk_icd_files
 import inspect
 readDir = Path(".")
 
@@ -141,6 +142,15 @@ Setting(
     lambda x: len(x) > 0 and len(x) < 64,
     mk_new_user,
     lambda x: x.replace(" ", "_").strip()
+)
+
+Setting(
+    "VulkanICD",
+    MAINSETTING_DEFINITIONS,
+    "str",
+    lambda x: x in get_vk_icd_files().keys(),
+    lambda _: list(get_vk_icd_files().keys())[0],
+    lambda x: x
 )
 
 Setting(

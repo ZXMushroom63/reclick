@@ -21,7 +21,8 @@ def launch_game(configPath, root):
     fileName = gamePath.name
     if penguin:
         command.insert(0, "wine")
-        env["VK_DRIVER_FILES"] = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json"
+        if Path(global_conf["VulkanICD"]).exists():
+            env["VK_DRIVER_FILES"] = global_conf["VulkanICD"]
         env["WINEDEBUG"] = "-all"
 
     try:
@@ -40,7 +41,7 @@ def launch_game(configPath, root):
         env["WINEDLLOVERRIDES"] = "dinput8=n,b"
         env["DOORSTOP_DISABLE"] = "1"
     
-    if shutil.which("nvidia-offload"):
+    if shutil.which("nvidia-offload") and not config["Settings"]["NoHwAccel"]:
         command.insert(0, "nvidia-offload")
 
     command = command + flags

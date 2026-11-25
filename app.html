@@ -65,6 +65,10 @@
                                 data-setting="ReplaceSteamAPI"
                             /><br />
 
+                            vulkan icd:
+                            <select data-setting="VulkanICD">
+                            </select><br />
+
                             gui color:
                             <input
                                 type="number"
@@ -152,10 +156,23 @@
 
             let has_frida = false;
             let selectedGame = null;
+            let icdmap = {};
+            async function draw_vk_list() {
+                icdmap = await window.pywebview.api.get_vk_icd_files();
+                const targ = document.querySelector("[data-setting=VulkanICD]");
+                targ.innerHTML = "";
+                Object.keys(icdmap).forEach(x => {
+                    const out = document.createElement("option");
+                    out.value = x;
+                    out.innerText = icdmap[x];
+                    targ.appendChild(out);
+                });
+            }
             addEventListener("load", init);
             async function init() {
                 await waitForPywebview();
                 has_frida = await window.pywebview.api.has_frida();
+                await draw_vk_list();
                 await update_games_internal();
                 await load_cfg();
                 await window.pywebview.api.internal_update_library();
