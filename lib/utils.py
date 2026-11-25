@@ -101,7 +101,7 @@ def get_vk_icd_files():
             icdMap[hsh] = str(match.absolute())
     res = list(icdMap.values())
     res.sort()
-    out = {}
+    out = {"": "none"}
     for icd in res:
         name = str(icd)
         for base in VK_DIRECTORIES.keys():
