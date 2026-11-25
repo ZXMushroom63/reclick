@@ -5,7 +5,6 @@ All-in-one userfriendly GUI for GSE/GBE games, automatically managing Photon for
 - you need these packages:
     - pywebview
     - psutil
-    - requests
 
 - FRIDA SUPPORT
     - `python -m pip install frida-tools` (used for CLR hooking)

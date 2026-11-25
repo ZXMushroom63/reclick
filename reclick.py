@@ -3,13 +3,12 @@ import sys
 import time
 from pathlib import Path
 import subprocess
-from lib.utils import get_vk_icd_files
+from lib.utils import get_vk_icd_files, datenow, perfstage
 
 sys.path.append(Path(__file__).resolve().parent.joinpath("lib"))  # fix imports
 root = Path(__file__).resolve().parent
 
 try:
-    import requests
     import webview
     import psutil
 except Exception as e:
@@ -28,16 +27,16 @@ except Exception as e:
             "--trusted-host",
             "files.pythonhosted.org",
             "pywebview",
-            "requests",
             "psutil",
         ]
     )
     sys.exit(1)
-
+perfstage("before imports")
 import lib.zx_packaging as zx_packaging
 import lib.zx_launching as zx_launching
 import lib.settings.zx_settings as zx_settings
 import lib.utils as utils
+perfstage("imports")
 
 class Interop:
     def get_library(self):
@@ -111,5 +110,5 @@ def on_closed():
 
 window = webview.create_window("reclick", "app.html", js_api=Interop(), frameless=False)
 window.events.closed += on_closed
-
+perfstage("WebView init")
 webview.start(debug=False if len(sys.argv) > 0 else True)

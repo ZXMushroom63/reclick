@@ -112,3 +112,8 @@ def get_vk_icd_files():
         out[str(icd)] = name
     vk_cache = out
     return out
+
+last_stage = datenow()
+def perfstage(name):
+    return
+    print(f"perf: {name} - {datenow() - last_stage}ms")
