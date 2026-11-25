@@ -155,3 +155,15 @@ searchbox.addEventListener("keydown", (e)=>{
         }
     }
 });
+document.addEventListener("keydown", (e)=>{
+    if ((e.key.length !== 1) || e.ctrlKey || e.altKey || e.metaKey) {
+        return;
+    }
+    if (![window, document.documentElement, document.body].includes(e.target)) {
+        return;
+    }
+    e.preventDefault();
+    searchbox.focus();
+    searchbox.value = e.key;
+    searchbox.dispatchEvent(new InputEvent("input"));
+});

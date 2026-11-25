@@ -1,6 +1,9 @@
 const logs_buffer = ["RECLICK v4"];
 const logs = document.querySelector("#devlogs");
 function log_to_console(x) {
+    if (logs_buffer[logs_buffer.length - 1] === x) {
+        return;
+    }
     logs_buffer.push(x);
     if (logs_buffer.length > 40) {
         logs_buffer.splice(0, 1);
