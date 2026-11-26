@@ -231,6 +231,15 @@ Setting(
 )
 
 Setting(
+    "GaleProfile",
+    GAMESETTING_DEFINITIONS,
+    "str",
+    lambda x: True,
+    lambda gamefile: "None",
+    lambda x: x
+)
+
+Setting(
     "GbeOverlay",
     GAMESETTING_DEFINITIONS,
     "bool",

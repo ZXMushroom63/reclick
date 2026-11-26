@@ -1,467 +1,465 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>retcon4</title>
-        <link rel="stylesheet" href="web/style.css" />
-    </head>
 
-    <body class="crt">
-        <div id="top_bar">
-            <h1 id="title" class="glowy">retcon4</h1>
-        </div>
-        <div id="repatch_section">
-            <button id="repatch_btn">Virtual LAN Fix</button>
-            <span style="float: right">
-                Network Interface:
-                <select data-setting="HostAddress">
-                    <option>todo: add NIC select option here</option>
-                </select>
-            </span>
-        </div>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>retcon4</title>
+    <link rel="stylesheet" href="web/style.css" />
+</head>
 
-        <div id="bottom_container">
-            <table id="sectioner">
-                <tr>
-                    <td id="leftOuter">
-                        <div id="left">
-                            <input type="search" placeholder="search..." id="gamesearch">
-                            <div class="game">
-                                <table>
-                                    <tr>
-                                        <td style="width: 100%">
-                                            <h3>Loading...</h3>
-                                            <small
-                                                >If this takes more than a
-                                                second smth broke</small
-                                            >
-                                        </td>
-                                        <td>
-                                            <button class="launch_btn">
-                                                Wait
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+<body class="crt">
+    <div id="top_bar">
+        <h1 id="title" class="glowy">retcon4</h1>
+    </div>
+    <div id="repatch_section">
+        <button id="repatch_btn">Virtual LAN Fix</button>
+        <span style="float: right">
+            Network Interface:
+            <select data-setting="HostAddress">
+                <option>todo: add NIC select option here</option>
+            </select>
+        </span>
+    </div>
+
+    <div id="bottom_container">
+        <table id="sectioner">
+            <tr>
+                <td id="leftOuter">
+                    <div id="left">
+                        <input type="search" placeholder="search..." id="gamesearch">
+                        <div class="game">
+                            <table>
+                                <tr>
+                                    <td style="width: 100%">
+                                        <h3>Loading...</h3>
+                                        <small>If this takes more than a
+                                            second smth broke</small>
+                                    </td>
+                                    <td>
+                                        <button class="launch_btn">
+                                            Wait
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
-                    </td>
-                    <td id="right">
-                        <div id="settingsWrapper">
-                            <u>global settings</u><br />
+                    </div>
+                </td>
+                <td id="right">
+                    <div id="settingsWrapper">
+                        <u>global settings</u><br />
 
-                            username: <input data-setting="Username" /><br />
+                        username: <input data-setting="Username" /><br />
 
-                            steam id: <input data-setting="SteamID" />
+                        steam id: <input data-setting="SteamID" />
 
-                            <button id="randomise_steam_id">⚂</button><br />
-                            custom photon server:
+                        <button id="randomise_steam_id">⚂</button><br />
+                        custom photon server:
 
-                            <input data-setting="PhotonHost" /><br />
+                        <input data-setting="PhotonHost" /><br />
 
-                            replace steam GSE DLLs:
-                            <input
-                                type="checkbox"
-                                data-setting="ReplaceSteamAPI"
-                            /><br />
+                        replace steam GSE DLLs:
+                        <input type="checkbox" data-setting="ReplaceSteamAPI" /><br />
 
-                            vulkan icd:
-                            <select data-setting="VulkanICD">
-                            </select><br />
+                        vulkan icd:
+                        <select data-setting="VulkanICD">
+                        </select><br />
 
-                            gui color:
-                            <input
-                                type="number"
-                                min="0"
-                                max="360"
-                                data-setting="RetconHue"
-                            /><br />
+                        gui color:
+                        <input type="number" min="0" max="360" data-setting="RetconHue" /><br />
 
-                            disable shaders:
-                            <input
-                                type="checkbox"
-                                data-setting="NoShaders"
-                            /><br />
+                        disable shaders:
+                        <input type="checkbox" data-setting="NoShaders" /><br />
 
-                            <div id="settings_divider"></div>
+                        <div id="settings_divider"></div>
 
-                            <br />
-                            <u id="game_heading">game settings</u><br />
+                        <br />
+                        <u id="game_heading">game settings</u><br />
 
-                            menu name:
-                            <input data-gamesetting="DisplayName" /><br />
+                        menu name:
+                        <input data-gamesetting="DisplayName" /><br />
 
-                            menu color:
-                            <input
-                                type="color"
-                                data-gamesetting="Color"
-                                value="#FFFFFF"
-                            /><br />
+                        menu color:
+                        <input type="color" data-gamesetting="Color" value="#FFFFFF" /><br />
 
-                            enable bepinex:
-                            <input
-                                type="checkbox"
-                                data-gamesetting="EnableMods"
-                            /><br />
+                        enable bepinex:
+                        <input type="checkbox" data-gamesetting="EnableMods" /><br />
 
-                            enable steam overlay:
-                            <input
-                                type="checkbox"
-                                data-gamesetting="GbeOverlay"
-                            /><br />
+                        gale profile:
+                        <select data-gamesetting="GaleProfile">
+                        </select>
+                        <div id="gale_about"><small id="gale_from">(reading_from)</small></div><br />
 
-                            launch params:
-                            <input data-gamesetting="Arguments" /><br />
+                        enable steam overlay:
+                        <input type="checkbox" data-gamesetting="GbeOverlay" /><br />
 
-                            no hw accel:
-                            <input
-                                type="checkbox"
-                                data-gamesetting="NoHwAccel"
-                            /><br />
-                            <button id="escape">back</button>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
+                        launch params:
+                        <input data-gamesetting="Arguments" /><br />
 
-        <div id="devlogs">RECLICK v4</div>
+                        no hw accel:
+                        <input type="checkbox" data-gamesetting="NoHwAccel" /><br />
+                        <button id="escape">back</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-        <script src="web/scripts/lib/colorops.js"></script>
-        <script src="web/scripts/lib/valueshim.js"></script>
-        <script src="web/scripts/lib/logging.js"></script>
-        <script src="web/scripts/update_nic_list.js"></script>
-        <script src="web/scripts/loading.js"></script>
-        <script src="web/scripts/loading_game.js"></script>
-        <script src="web/scripts/search.js"></script>
+    <div id="devlogs">RECLICK v4</div>
 
-        <script>
-            let games = (globalThis.games = {});
-            let games_internal = (globalThis.games_internal = []);
-            let lastLoadedConf = null;
+    <script src="web/scripts/lib/colorops.js"></script>
+    <script src="web/scripts/lib/valueshim.js"></script>
+    <script src="web/scripts/lib/logging.js"></script>
+    <script src="web/scripts/update_nic_list.js"></script>
+    <script src="web/scripts/loading.js"></script>
+    <script src="web/scripts/loading_game.js"></script>
+    <script src="web/scripts/search.js"></script>
 
-            const waitForPywebview = async () => {
-                return new Promise((resolve) => {
-                    const interval = setInterval(() => {
-                        if (
-                            typeof pywebview !== "undefined" &&
-                            pywebview.api &&
-                            Object.keys(pywebview.api).length > 0
-                        ) {
-                            clearInterval(interval);
-                            resolve();
-                        }
-                    }, 50);
-                });
-            };
+    <script>
+        let games = (globalThis.games = {});
+        let modprofiles = (globalThis.modprofiles = {});
+        let games_internal = (globalThis.games_internal = []);
+        let lastLoadedConf = null;
 
-            let has_frida = false;
-            let selectedGame = null;
-            let icdmap = {};
-            async function draw_vk_list() {
-                icdmap = await window.pywebview.api.get_vk_icd_files();
-                const targ = document.querySelector("[data-setting=VulkanICD]");
-                targ.innerHTML = "";
-                Object.keys(icdmap).forEach(x => {
-                    const out = document.createElement("option");
-                    out.value = x;
-                    out.innerText = icdmap[x];
-                    targ.appendChild(out);
-                });
-            }
-            addEventListener("load", init);
-            async function init() {
-                await waitForPywebview();
-                has_frida = await window.pywebview.api.has_frida();
-                await draw_vk_list();
+        const waitForPywebview = async () => {
+            return new Promise((resolve) => {
+                const interval = setInterval(() => {
+                    if (
+                        typeof pywebview !== "undefined" &&
+                        pywebview.api &&
+                        Object.keys(pywebview.api).length > 0
+                    ) {
+                        clearInterval(interval);
+                        resolve();
+                    }
+                }, 50);
+            });
+        };
+
+        let has_frida = false;
+        let selectedGame = null;
+        let icdmap = {};
+        async function draw_vk_list() {
+            icdmap = await window.pywebview.api.get_vk_icd_files();
+            const targ = document.querySelector("[data-setting=VulkanICD]");
+            targ.innerHTML = "";
+            Object.keys(icdmap).forEach(x => {
+                const out = document.createElement("option");
+                out.value = x;
+                out.innerText = icdmap[x];
+                targ.appendChild(out);
+            });
+        }
+        addEventListener("load", init);
+        async function init() {
+            await waitForPywebview();
+            has_frida = await window.pywebview.api.has_frida();
+            await draw_vk_list();
+            await update_games_internal();
+            modprofiles = await window.pywebview.api.get_mods();
+            await load_cfg();
+            await window.pywebview.api.internal_update_library();
+            if (true) {
                 await update_games_internal();
-                await load_cfg();
-                await window.pywebview.api.internal_update_library();
-                if (true) {
-                    await update_games_internal();
-                    redraw_games();
-                }
+                redraw_games();
             }
-            async function update_games_internal() {
-                games = await window.pywebview.api.get_library();
-                games_internal = Object.entries(games).map((ent) =>
-                    Object.assign({ ConfigPath: ent[0] }, ent[1]),
-                );
+        }
+        async function update_games_internal() {
+            games = await window.pywebview.api.get_library();
+            games_internal = Object.entries(games).map((ent) =>
+                Object.assign({ ConfigPath: ent[0] }, ent[1]),
+            );
+        }
+        document
+            .querySelector("#repatch_btn")
+            .addEventListener("click", async () => { });
+        const buttonMaps = new Map();
+        function get_launcher_button(
+            cfgPath,
+            text,
+            extraLaunchArgs,
+            prefix,
+        ) {
+            if (!buttonMaps.has(cfgPath)) {
+                buttonMaps.set(cfgPath, []);
             }
-            document
-                .querySelector("#repatch_btn")
-                .addEventListener("click", async () => {});
-            const buttonMaps = new Map();
-            function get_launcher_button(
-                cfgPath,
-                text,
-                extraLaunchArgs,
-                prefix,
-            ) {
-                if (!buttonMaps.has(cfgPath)) {
-                    buttonMaps.set(cfgPath, []);
-                }
-                const launchBtn = document.createElement("button");
-                launchBtn.classList.add("launch_btn");
-                launchBtn.innerText = text;
-                launchBtn.addEventListener("click", async () => {
-                    if (launchBtn.classList.contains("disabled")) {
-                        await window.pywebview.api.close_async(
-                            games[cfgPath],
-                        );
-                        launchBtn.blur();
-                        return;
-                    }
+            const launchBtn = document.createElement("button");
+            launchBtn.classList.add("launch_btn");
+            launchBtn.innerText = text;
+            launchBtn.addEventListener("click", async () => {
+                if (launchBtn.classList.contains("disabled")) {
+                    await window.pywebview.api.close_async(
+                        games[cfgPath],
+                    );
                     launchBtn.blur();
-                    try {
-                        log_to_console(`Launching cfg: ${cfgPath}`);
-                        log_to_console(games[cfgPath].GamePath);
-                        buttonMaps
-                            .get(cfgPath)
-                            .forEach((button) =>
-                                button.classList.add("disabled"),
-                            );
-                        await window.pywebview.api.launch_async(cfgPath);
-                        log_to_console("Game exited!");
-                        buttonMaps
-                            .get(cfgPath)
-                            .forEach((button) =>
-                                button.classList.remove("disabled"),
-                            );
-                    } catch (error) {
-                        buttonMaps
-                            .get(cfgPath)
-                            .forEach((button) =>
-                                button.classList.remove("disabled"),
-                            );
-                    }
-                });
-                buttonMaps.get(cfgPath).push(launchBtn);
-                return launchBtn;
-            }
-            const INTERNALS = ["PhotonServer4", "PhotonServer5"];
-            function is_internal(tags) {
-                return INTERNALS.reduce(
-                    (prevVal, tag) => prevVal || tags.includes(tag),
-                    false,
-                );
-            }
-            const game_entry_map = new Map();
-            function draw_game(gameEntry, left) {
-                const hue = lastLoadedConf.RetconHue;
-                const cfgPath = gameEntry[0];
-                const transformedColor = lastLoadedConf.NoShaders ? games[cfgPath].Settings.Color : transformColor(games[cfgPath].Settings.Color, 360-hue);
-                if (game_entry_map.has(cfgPath)) {
-                    const elem = game_entry_map.get(cfgPath);
-                    elem.querySelector("h3").innerText = games[cfgPath].Settings.DisplayName;
-                    elem.style.setProperty("--col", transformedColor);
-                    if (cfgPath === selectedGame) {
-                        elem.classList.add("selected");
-                    }
-                    left.appendChild(elem);
                     return;
                 }
+                launchBtn.blur();
                 try {
-                    const json = gameEntry[1];
-                    const gameContainer = document.createElement("div");
-                    gameContainer.style.setProperty("--col", transformedColor);
-                    if (cfgPath === selectedGame) {
-                        gameContainer.classList.add("selected");
+                    log_to_console(`Launching cfg: ${cfgPath}`);
+                    log_to_console(games[cfgPath].GamePath);
+                    buttonMaps
+                        .get(cfgPath)
+                        .forEach((button) =>
+                            button.classList.add("disabled"),
+                        );
+                    await window.pywebview.api.launch_async(cfgPath);
+                    log_to_console("Game exited!");
+                    buttonMaps
+                        .get(cfgPath)
+                        .forEach((button) =>
+                            button.classList.remove("disabled"),
+                        );
+                } catch (error) {
+                    buttonMaps
+                        .get(cfgPath)
+                        .forEach((button) =>
+                            button.classList.remove("disabled"),
+                        );
+                }
+            });
+            buttonMaps.get(cfgPath).push(launchBtn);
+            return launchBtn;
+        }
+        const INTERNALS = ["PhotonServer4", "PhotonServer5"];
+        function is_internal(tags) {
+            return INTERNALS.reduce(
+                (prevVal, tag) => prevVal || tags.includes(tag),
+                false,
+            );
+        }
+        const game_entry_map = new Map();
+        function draw_game(gameEntry, left) {
+            const hue = lastLoadedConf.RetconHue;
+            const cfgPath = gameEntry[0];
+            const transformedColor = lastLoadedConf.NoShaders ? games[cfgPath].Settings.Color : transformColor(games[cfgPath].Settings.Color, 360 - hue);
+            if (game_entry_map.has(cfgPath)) {
+                const elem = game_entry_map.get(cfgPath);
+                elem.querySelector("h3").innerText = games[cfgPath].Settings.DisplayName;
+                elem.style.setProperty("--col", transformedColor);
+                if (cfgPath === selectedGame) {
+                    elem.classList.add("selected");
+                }
+                left.appendChild(elem);
+                return;
+            }
+            try {
+                const json = gameEntry[1];
+                const gameContainer = document.createElement("div");
+                gameContainer.style.setProperty("--col", transformedColor);
+                if (cfgPath === selectedGame) {
+                    gameContainer.classList.add("selected");
+                }
+                gameContainer.addEventListener("click", (e) => {
+                    if (e.target.tagName.toLowerCase() === "button") {
+                        return;
                     }
-                    gameContainer.addEventListener("click", (e) => {
-                        if (e.target.tagName.toLowerCase() === "button") {
-                            return;
-                        }
-                        document.body.classList.add("changingsettings");
-                        selectedGame = cfgPath;
-                        redraw_games();
-                    });
-                    gameContainer.classList.add("game");
-                    const intern = is_internal(json.Tags);
-                    if (intern) {
-                        gameContainer.classList.add("internal");
-                    }
-                    const gameContentWrapper = document.createElement("table");
-                    gameContainer.appendChild(gameContentWrapper);
-                    const gameContent = document.createElement("tr");
-                    gameContentWrapper.appendChild(gameContent);
-                    const gameDetails = document.createElement("td");
-                    const launchWrapper = document.createElement("td");
-                    gameContent.appendChild(gameDetails);
-                    gameDetails.style.width = "100%";
-                    gameContent.appendChild(launchWrapper);
+                    document.body.classList.add("changingsettings");
+                    selectedGame = cfgPath;
+                    redraw_games();
+                });
+                gameContainer.classList.add("game");
+                const intern = is_internal(json.Tags);
+                if (intern) {
+                    gameContainer.classList.add("internal");
+                }
+                const gameContentWrapper = document.createElement("table");
+                gameContainer.appendChild(gameContentWrapper);
+                const gameContent = document.createElement("tr");
+                gameContentWrapper.appendChild(gameContent);
+                const gameDetails = document.createElement("td");
+                const launchWrapper = document.createElement("td");
+                gameContent.appendChild(gameDetails);
+                gameDetails.style.width = "100%";
+                gameContent.appendChild(launchWrapper);
 
-                    const gameTitle = document.createElement("h3");
-                    gameTitle.innerText = games[cfgPath].Settings.DisplayName;
-                    gameDetails.appendChild(gameTitle);
-                    const gameInfo = document.createElement("small");
-                    gameInfo.innerText = `${json.AppID !== 0 ? `AppID: ${json.AppID} | ` : ""}${json.Tags.join(", ") || "No Tags"}`;
-                    gameDetails.appendChild(gameInfo);
-                    const hasPhoton4 = games_internal.find((x) =>
-                        x.Tags.includes("PhotonServer4"),
+                const gameTitle = document.createElement("h3");
+                gameTitle.innerText = games[cfgPath].Settings.DisplayName;
+                gameDetails.appendChild(gameTitle);
+                const gameInfo = document.createElement("small");
+                gameInfo.innerText = `${json.AppID !== 0 ? `AppID: ${json.AppID} | ` : ""}${json.Tags.join(", ") || "No Tags"}`;
+                gameDetails.appendChild(gameInfo);
+                const hasPhoton4 = games_internal.find((x) =>
+                    x.Tags.includes("PhotonServer4"),
+                );
+                const hasPhoton5 = games_internal.find((x) =>
+                    x.Tags.includes("PhotonServer5"),
+                );
+                if (json.Tags.includes("Positron") && hasPhoton4) {
+                    launchWrapper.style.minWidth = "9rem";
+                    launchWrapper.appendChild(
+                        get_launcher_button(
+                            games_internal.find((x) =>
+                                x.Tags.includes("PhotonServer4"),
+                            ).ConfigPath,
+                            "Host",
+                            ["/run", "LoadBalancing"],
+                        ),
                     );
-                    const hasPhoton5 = games_internal.find((x) =>
-                        x.Tags.includes("PhotonServer5"),
-                    );
-                    if (json.Tags.includes("Positron") && hasPhoton4) {
-                        launchWrapper.style.minWidth = "9rem";
+                } else if (
+                    json.Tags.includes("PhotonServerSettings") &&
+                    hasPhoton5
+                ) {
+                    launchWrapper.style.minWidth = "9rem";
+                    if (has_frida) {
                         launchWrapper.appendChild(
                             get_launcher_button(
                                 games_internal.find((x) =>
-                                    x.Tags.includes("PhotonServer4"),
+                                    x.Tags.includes("PhotonServer5"),
                                 ).ConfigPath,
                                 "Host",
-                                ["/run", "LoadBalancing"],
+                                [
+                                    "-l",
+                                    "hook.js",
+                                    "--",
+                                    "/run",
+                                    "LoadBalancing",
+                                ],
+                                ["frida", "-f"],
                             ),
                         );
-                    } else if (
-                        json.Tags.includes("PhotonServerSettings") &&
-                        hasPhoton5
-                    ) {
-                        launchWrapper.style.minWidth = "9rem";
-                        if (has_frida) {
-                            launchWrapper.appendChild(
-                                get_launcher_button(
-                                    games_internal.find((x) =>
-                                        x.Tags.includes("PhotonServer5"),
-                                    ).ConfigPath,
-                                    "Host",
-                                    [
-                                        "-l",
-                                        "hook.js",
-                                        "--",
-                                        "/run",
-                                        "LoadBalancing",
-                                    ],
-                                    ["frida", "-f"],
-                                ),
+                    } else {
+                        const fridaBtn = document.createElement("button");
+                        fridaBtn.innerText = "Error!";
+                        fridaBtn.classList.add("launch_btn");
+                        fridaBtn.addEventListener("click", () => {
+                            alert(
+                                "You need to install frida-tools into python to self-host Photon v5!\nNote: you can still play and join servers just fine",
                             );
-                        } else {
-                            const fridaBtn = document.createElement("button");
-                            fridaBtn.innerText = "Error!";
-                            fridaBtn.classList.add("launch_btn");
-                            fridaBtn.addEventListener("click", () => {
-                                alert(
-                                    "You need to install frida-tools into python to self-host Photon v5!\nNote: you can still play and join servers just fine",
-                                );
-                            });
-                            launchWrapper.appendChild(fridaBtn);
-                        }
+                        });
+                        launchWrapper.appendChild(fridaBtn);
                     }
+                }
 
-                    const launchBtn = get_launcher_button(
-                        cfgPath,
-                        intern ? "Test" : "Play",
+                const launchBtn = get_launcher_button(
+                    cfgPath,
+                    intern ? "Test" : "Play",
+                );
+                launchWrapper.appendChild(launchBtn);
+                game_entry_map.set(cfgPath, gameContainer);
+                left.appendChild(gameContainer);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        let queueingRead = false;
+        function reload_gamesettings() {
+            if (!selectedGame) {
+                return;
+            }
+            document.querySelector("#game_heading").innerText =
+                games[selectedGame].GamePath.split("/")
+                    .map((x) => x.split("\\"))
+                    .flat()
+                    .toReversed()[0]
+                    .replaceAll(".exe", "")
+                    .toLowerCase() + " settings";
+            queueingRead = true;
+            async function savechanges() {
+                await window.pywebview.api.write_gameconf(selectedGame, games[selectedGame]);
+                redraw_games();
+            }
+            window.pywebview.api.read_gameconf(selectedGame).then((obj) => {
+                games[selectedGame] = obj;
+                Object.entries(obj["Settings"]).forEach((ent) => {
+                    const settingTarget = document.querySelector(
+                        `[data-gamesetting="${ent[0]}"]`,
                     );
-                    launchWrapper.appendChild(launchBtn);
-                    game_entry_map.set(cfgPath, gameContainer);
-                    left.appendChild(gameContainer);
-                } catch (error) {
-                    console.error(error);
-                }
-            }
-
-            let queueingRead = false;
-            function reload_gamesettings() {
-                if (!selectedGame) {
-                    return;
-                }
-                document.querySelector("#game_heading").innerText =
-                    games[selectedGame].GamePath.split("/")
-                        .map((x) => x.split("\\"))
-                        .flat()
-                        .toReversed()[0]
-                        .replaceAll(".exe", "")
-                        .toLowerCase() + " settings";
-                queueingRead = true;
-                async function savechanges() {
-                    await window.pywebview.api.write_gameconf(selectedGame, games[selectedGame]);
-                    redraw_games();
-                }
-                window.pywebview.api.read_gameconf(selectedGame).then((obj) => {
-                    games[selectedGame] = obj;
-                    Object.entries(obj["Settings"]).forEach((ent) => {
-                        const settingTarget = document.querySelector(
-                            `[data-gamesetting="${ent[0]}"]`,
-                        );
-                        if (settingTarget) {
-                            settingTarget.set_value(ent[1]);
-                            settingTarget.onblur = () => {
-                                obj["Settings"][ent[0]] = settingTarget.get_value();
-                                savechanges();
-                            };
-                            settingTarget.onkeydown = (e) => {
-                                if (e.key === "Enter") {
-                                    settingTarget.blur();
-                                }
-                            };
-                            settingTarget.oninput = (e) => {
-                                if (settingTarget.type === "checkbox") {
-                                    settingTarget.blur();
-                                }
-                            };
+                    if (settingTarget) {
+                        if (ent[0] === "GaleProfile") {
+                            settingTarget.innerHTML = "";
+                            const modprofile = modprofiles["" + obj["AppID"]] || { profiles: ["None"], slug: null };
+                            document.querySelector("#gale_about").style.display = modprofile.slug ? "block" : "none";
+                            if (modprofile.slug) {
+                                document.querySelector("#gale_from").innerText = `(reading from ${modprofile.slug})`;
+                            }
+                            modprofile.profiles.forEach((name, i) => {
+                                const option = document.createElement("option");
+                                option.selected = i === 0;
+                                option.value = name;
+                                option.innerText = name;
+                                settingTarget.appendChild(option);
+                            });
                         }
-                    });
+                        settingTarget.set_value(ent[1]);
+                        settingTarget.onblur = () => {
+                            obj["Settings"][ent[0]] = settingTarget.get_value();
+                            savechanges();
+                        };
+                        settingTarget.onkeydown = (e) => {
+                            if (e.key === "Enter") {
+                                settingTarget.blur();
+                            }
+                        };
+                        settingTarget.oninput = (e) => {
+                            if (settingTarget.type === "checkbox") {
+                                settingTarget.blur();
+                            }
+                        };
+                    }
                 });
-            }
-            function redraw_games() {
-                const left = document.querySelector("#left");
-                const oldScroll = left.scrollTop;
-                [...document.querySelectorAll(".game.selected")].forEach((x) =>
-                    x.classList.remove("selected"),
-                );
-                [...document.querySelectorAll(".game")].forEach((x) =>
-                    x.remove(),
-                );
-
-                sort_games();
-
-                Object.entries(games)
-                    .map((ent) => [ent[0], ent[1]])
-                    .sort(
-                        (a, b) =>
-                            is_internal(a[1].Tags) - is_internal(b[1].Tags),
-                    )
-                    .forEach((ent) => {
-                        selectedGame ||= ent[0];
-                        draw_game(ent, left);
-                    });
-                reload_gamesettings();
-                left.scrollTop = oldScroll;
-                log_to_console("Redrew games panel");
-            }
-            function sleep(ms) {
-                return new Promise((res, rej) => {
-                    setTimeout(() => {
-                        res();
-                    }, ms);
-                });
-            }
-            const repatchBtn = document.querySelector("#repatch_btn");
-            repatchBtn.addEventListener("click", async (e) => {
-                if (repatchBtn.classList.contains("disabled")) {
-                    return;
-                }
-                repatchBtn.classList.add("disabled");
-                await sleep(100);
-                await window.pywebview.api.lanpatch(
-                    document.querySelector("[data-setting=HostAddress]")
-                        .value || "",
-                );
-                repatchBtn.classList.remove("disabled");
             });
-            document.querySelector("#escape").addEventListener("click", () => {
-                document.body.classList.remove("changingsettings");
-            });
-            document
-                .querySelector("#randomise_steam_id")
-                .addEventListener("click", async (e) => {
-                    document.querySelector("[data-setting=SteamID]").value =
-                        await window.pywebview.api.generate_steam_id();
-                    document.querySelector("[data-setting=SteamID]").select();
-                    document.querySelector("[data-setting=SteamID]").blur();
+        }
+        function redraw_games() {
+            const left = document.querySelector("#left");
+            const oldScroll = left.scrollTop;
+            [...document.querySelectorAll(".game.selected")].forEach((x) =>
+                x.classList.remove("selected"),
+            );
+            [...document.querySelectorAll(".game")].forEach((x) =>
+                x.remove(),
+            );
+
+            sort_games();
+
+            Object.entries(games)
+                .map((ent) => [ent[0], ent[1]])
+                .sort(
+                    (a, b) =>
+                        is_internal(a[1].Tags) - is_internal(b[1].Tags),
+                )
+                .forEach((ent) => {
+                    selectedGame ||= ent[0];
+                    draw_game(ent, left);
                 });
-        </script>
-    </body>
+            reload_gamesettings();
+            left.scrollTop = oldScroll;
+            log_to_console("Redrew games panel");
+        }
+        function sleep(ms) {
+            return new Promise((res, rej) => {
+                setTimeout(() => {
+                    res();
+                }, ms);
+            });
+        }
+        const repatchBtn = document.querySelector("#repatch_btn");
+        repatchBtn.addEventListener("click", async (e) => {
+            if (repatchBtn.classList.contains("disabled")) {
+                return;
+            }
+            repatchBtn.classList.add("disabled");
+            await sleep(100);
+            await window.pywebview.api.lanpatch(
+                document.querySelector("[data-setting=HostAddress]")
+                    .value || "",
+            );
+            repatchBtn.classList.remove("disabled");
+        });
+        document.querySelector("#escape").addEventListener("click", () => {
+            document.body.classList.remove("changingsettings");
+        });
+        document
+            .querySelector("#randomise_steam_id")
+            .addEventListener("click", async (e) => {
+                document.querySelector("[data-setting=SteamID]").value =
+                    await window.pywebview.api.generate_steam_id();
+                document.querySelector("[data-setting=SteamID]").select();
+                document.querySelector("[data-setting=SteamID]").blur();
+            });
+    </script>
+</body>
+
 </html>

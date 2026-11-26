@@ -34,6 +34,7 @@ except Exception as e:
 perfstage("before imports")
 import lib.zx_packaging as zx_packaging
 import lib.zx_launching as zx_launching
+import lib.zx_modding as zx_modding
 import lib.settings.zx_settings as zx_settings
 import lib.utils as utils
 perfstage("imports")
@@ -56,6 +57,9 @@ class Interop:
 
     def write_cfg(self, obj):
         return zx_settings.write_conf(obj)
+    
+    def get_mods(self):
+        return zx_modding.get_modprofiles()
 
     def read_gameconf(self, cfgPath):
         return zx_settings.read_gameconf(cfgPath)
@@ -106,7 +110,6 @@ def on_closed():
         zx_launching.config_pid_map[key] = False
     time.sleep(1.0)
     print("Goodbye")
-
 
 window = webview.create_window("retcon4", "app.html", js_api=Interop(), frameless=False)
 window.events.closed += on_closed
