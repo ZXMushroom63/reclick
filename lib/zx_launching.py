@@ -29,6 +29,7 @@ def launch_game(configPath, root):
         os.mkdir(root.joinpath(".eosr").absolute())
     except:
         pass
+    env["LOVELY_MOD_DIR"] = str(gamePath.parent.joinpath("mods").absolute())
     env["EOSR_DATA_DIR"] = str(root.joinpath(".eosr").absolute())
     env["EOSR_ENABLE_LAN"] = "1"
     env["EOSR_TRACE"] = "lifecycle"

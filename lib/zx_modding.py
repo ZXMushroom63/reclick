@@ -40,7 +40,8 @@ def get_modprofiles():
                 continue
             out[str(game["platforms"]["steam"]["id"])] = {
                 "profiles": ["None"] + list(map(lambda x: x.absolute().name, list(dirPath.joinpath(game["slug"]).joinpath("profiles").glob("*")))),
-                "slug": game["slug"]
+                "slug": game["slug"],
+                "container": str(dirPath.joinpath(game["slug"]).joinpath("profiles").absolute())
             }
         cached_modprofiles = out
         return out
