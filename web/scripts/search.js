@@ -140,13 +140,14 @@ function sort_games() {
         });
     }
 }
-
+let acceptEnterLaunch = false;
 const cont = document.querySelector("#left");
 searchbox.addEventListener("input", () => {
     sort_games();
     //selectedGame = Object.keys(games)[0];
     cont.scrollTop = 0;
     redraw_games();
+    acceptEnterLaunch = true;
 });
 let lastLaunchKeyb = Date.now();
 searchbox.addEventListener("keydown", (e) => {
@@ -156,7 +157,15 @@ searchbox.addEventListener("keydown", (e) => {
         if (target && buttonMaps.has(target) && (now - lastLaunchKeyb) > 150) {
             buttonMaps.get(target)[0].click();
             lastLaunchKeyb = now;
+            e.stopImmediatePropagation();
+            e.stopPropagation();
+            e.preventDefault();
         }
+    }
+    if (e.key.startsWith("Arrow")) {
+        searchbox.blur();
+        [...document.querySelectorAll(".game")][0].click();
+        acceptEnterLaunch = true;
     }
 });
 window.addEventListener("keydown", (e) => {
@@ -164,6 +173,7 @@ window.addEventListener("keydown", (e) => {
         return;
     }
     if (![window, document.documentElement, document.body].includes(e.target) && !["SELECT", "BUTTON"].includes(e.target.tagName)) {
+        acceptEnterLaunch = false;
         return;
     }
     e.preventDefault();
@@ -175,9 +185,10 @@ window.addEventListener("keydown", (e) => {
 
 window.addEventListener("keydown", (e) => {
     if (![window, document.documentElement, document.body].includes(e.target) && !["SELECT", "BUTTON"].includes(e.target.tagName)) {
+        acceptEnterLaunch = false;
         return;
     }
-    if (e.key === "Enter" && e.shiftKey) {
+    if (e.key === "Enter" && (e.shiftKey || acceptEnterLaunch)) {
         return buttonMaps.get(selectedGame)[0].click();
     }
     if (!["ArrowUp", "ArrowDown", "ArrowRight", "PageUp"].includes(e.key)) {
@@ -187,7 +198,7 @@ window.addEventListener("keydown", (e) => {
     e.stopPropagation();
     
     if (e.key === "ArrowRight") {
-        return
+        return;
     }
 
     const keys = Object.keys(games);
