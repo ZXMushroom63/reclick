@@ -9,11 +9,11 @@ from lib.patches.patches import patch_path
 
 config_pid_map = {}
 
-def launch_game(configPath, root):
+def launch_game(configPath, root, overrideArgs):
     global config_pid_map
     global_conf = zx_settings.read_cfg()
     config = zx_settings.read_gameconf(configPath)
-    flags = config["Settings"]["Arguments"].split(" ")
+    flags = overrideArgs if overrideArgs != None else config["Settings"]["Arguments"].split(" ")
     penguin = not sys.platform.startswith("win")
     env = os.environ.copy()
     gamePath = Path(configPath).parent.joinpath(Path(config["GamePath"]))

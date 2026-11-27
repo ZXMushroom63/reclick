@@ -178,8 +178,7 @@
         function get_launcher_button(
             cfgPath,
             text,
-            extraLaunchArgs,
-            prefix,
+            launchArgs
         ) {
             if (!buttonMaps.has(cfgPath)) {
                 buttonMaps.set(cfgPath, []);
@@ -204,7 +203,7 @@
                         .forEach((button) =>
                             button.classList.add("disabled"),
                         );
-                    await window.pywebview.api.launch_async(cfgPath);
+                    await window.pywebview.api.launch_async(cfgPath, launchArgs || null);
                     log_to_console("Game exited!");
                     buttonMaps
                         .get(cfgPath)
